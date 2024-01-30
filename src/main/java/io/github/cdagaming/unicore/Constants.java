@@ -27,7 +27,6 @@ package io.github.cdagaming.unicore;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.cdagaming.unicore.integrations.logging.LoggingImpl;
 import io.github.cdagaming.unicore.integrations.logging.SLF4JLogger;
-import io.github.cdagaming.unicore.utils.TranslationUtils;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -43,7 +42,7 @@ public class Constants {
     /**
      * The Application's Name
      */
-    public static final String NAME = "@MOD_NAME@";
+    public static final String NAME = "@APP_NAME@";
 
     /**
      * The Application's Version ID
@@ -56,19 +55,9 @@ public class Constants {
     public static final String APP_ID = "unicore";
 
     /**
-     * The URL to receive Update Information from
-     */
-    public static final String UPDATE_JSON = "https://raw.githubusercontent.com/CDAGaming/VersionLibrary/master/UniCore/update.json";
-
-    /**
      * The Application's Instance of {@link LoggingImpl} for Logging Information
      */
     public static final LoggingImpl LOG = new SLF4JLogger(APP_ID);
-
-    /**
-     * The Application's Instance of {@link TranslationUtils} for Localization and Translating Data Strings
-     */
-    public static final TranslationUtils TRANSLATOR = new TranslationUtils(APP_ID, true).build();
 
     /**
      * The Current Thread's Class Loader, used to dynamically receive data as needed

@@ -150,34 +150,6 @@ public class TranslationUtils {
     }
 
     /**
-     * Converts a Language Identifier using the Specified Conversion Mode, if possible
-     * <p>
-     * Note: If None is Used on a Valid Value, this function can be used as verification, if any
-     *
-     * @param originalId The original Key to Convert (5-Character Limit)
-     * @param protocol   The Protocol to Target for this conversion
-     * @param mode       The Conversion Mode to convert the keycode to
-     * @return The resulting converted Language Identifier, or the mode's unknown key
-     */
-    public static String convertId(final String originalId, final int protocol, final ConversionMode mode) {
-        String resultId = originalId;
-
-        if (originalId.length() == 5 && originalId.contains("_")) {
-            if (mode == ConversionMode.PackFormat2 || (mode == ConversionMode.None && protocol < 315)) {
-                resultId = resultId.substring(0, 3).toLowerCase() + resultId.substring(3).toUpperCase();
-            } else if (mode == ConversionMode.PackFormat3 || mode == ConversionMode.None) {
-                resultId = resultId.toLowerCase();
-            }
-        }
-
-        if (resultId.equals(originalId) && mode != ConversionMode.None) {
-            Constants.LOG.debugWarn(Constants.TRANSLATOR.translate("unicore.logger.warning.convert.invalid", resultId, mode.name()));
-        }
-
-        return resultId.trim();
-    }
-
-    /**
      * Attempt to retrieve the localized equivalent of the specified string
      *
      * @param original The string to interpret
@@ -742,27 +714,5 @@ public class TranslationUtils {
      */
     public String getTranslation(final String translationKey) {
         return getTranslationFrom(languageId, translationKey);
-    }
-
-    /**
-     * A Mapping storing the possible Conversion Modes for this module
-     */
-    public enum ConversionMode {
-        /**
-         * Constant for the "Pack Format 2" Conversion Mode.
-         */
-        PackFormat2,
-        /**
-         * Constant for the "Pack Format 3" Conversion Mode.
-         */
-        PackFormat3,
-        /**
-         * Constant for the "None or Verification" Conversion Mode.
-         */
-        None,
-        /**
-         * Constant for the "Unknown" Conversion Mode.
-         */
-        Unknown
     }
 }

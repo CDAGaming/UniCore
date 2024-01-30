@@ -97,7 +97,7 @@ shadowJar {
     it.doLast {
         ProcessClasses.process(
                 path, [
-                "MOD_NAME"    : project.name,
+                "APP_NAME"    : project.name,
                 "VERSION_ID"  : project.version.toString()
         ]
         )
