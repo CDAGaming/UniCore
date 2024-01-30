@@ -1,0 +1,191 @@
+import org.gradle.internal.jvm.Jvm
+import xyz.wagyourtail.replace_str.ProcessClasses
+
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+
+plugins {
+    id 'java'
+    id 'signing'
+    id 'maven-publish'
+    id 'com.diffplug.spotless' version '6.24.0'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+version = "${build_version}" + (project.hasProperty("version_snapshot") ? "-SNAPSHOT" : "")
+group = "${maven_group}"
+description = 'TBD - Coming Soon'
+base.archivesName = "${archives_base_name}"
+
+Jvm currentJvm = Jvm.current()
+JavaVersion sourceVersion = currentJvm.javaVersion
+JavaVersion targetVersion = JavaVersion.toVersion("${java_version}")
+
+boolean modernSourceSupport = sourceVersion.isJava9Compatible()
+boolean modernTargetSupport = targetVersion.isJava9Compatible()
+
+[java].each {
+    if (!modernSourceSupport) {
+        it.sourceCompatibility = sourceVersion
+        it.targetCompatibility = targetVersion
+    }
+}
+
+spotless {
+    java {
+        licenseHeaderFile(rootProject.file("HEADER"))
+    }
+}
+
+configurations {
+    shadeOnly
+    shade
+    implementation.extendsFrom shade
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    if (!modernTargetSupport) {
+        // If we are targeting a release below Java 9,
+        // work around JDK-8206937 by providing a shim for inaccessible classes.
+        compileOnly("me.eigenraven.java8unsupported:java-8-unsupported-shim:1.0.0")
+    }
+
+    // Annotations
+    implementation("com.google.code.findbugs:jsr305:3.0.2")
+    implementation("com.github.spotbugs:spotbugs-annotations:4.8.3")
+
+    shade group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
+    shade group: 'org.slf4j', name: 'slf4j-api', version: '2.0.10'
+    shade group: 'net.lenni0451', name: 'Reflect', version: "${reflect_version}"
+    shade group: 'io.github.classgraph', name: 'classgraph', version: "${classgraph_version}"
+}
+
+[jar].each {
+    it.manifest {
+        attributes([
+                "Specification-Title"     : project.name,
+                "Specification-Vendor"    : "CDAGaming",
+                "Specification-Version"   : "1", // We are version 1 of ourselves
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : project.version,
+                "Implementation-Vendor"   : "CDAGaming",
+                "Implementation-Timestamp": LocalDateTime.now().atOffset(ZoneOffset.UTC)
+                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ"))
+        ])
+    }
+}
+
+gradle.projectsEvaluated {
+    [javadoc].each {
+        it.options.encoding = "UTF-8"
+    }
+}
+
+shadowJar {
+    configurations = [project.configurations.shade, project.configurations.shadeOnly]
+    archiveClassifier.set('')
+    exclude 'META-INF/versions/**'
+}
+
+[compileJava].each {
+    java.nio.file.Path path = it.destinationDirectory.asFile.getOrNull().toPath()
+    it.doLast {
+        ProcessClasses.process(
+                path, [
+                "MOD_NAME"    : project.name,
+                "VERSION_ID"  : project.version.toString()
+        ]
+        )
+    }
+}
+
+tasks.register('javadocJar', Jar) {
+    dependsOn javadoc
+    from javadoc.destinationDir
+    archiveClassifier.set('javadoc')
+}
+
+tasks.register('sourcesJar', Jar) {
+    from sourceSets.main.allSource
+    archiveClassifier.set('sources')
+}
+
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+assemble.dependsOn javadocJar, sourcesJar
+
+[compileJava].each {
+    it.options.encoding = 'UTF-8'
+    it.options.deprecation = true
+    it.options.fork = true
+
+    // The Minecraft launcher currently installs Java 8 for users, so your mod probably wants to target Java 8 too
+    // JDK 9 introduced a new way of specifying this that will make sure no newer classes or methods are used.
+    // We"ll use that if it"s available, but otherwise we"ll use the older option.
+    if (modernSourceSupport) {
+        it.options.release.set(Integer.parseInt(targetVersion.majorVersion))
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact shadowJar
+            artifact javadocJar
+            artifact sourcesJar
+
+            pom {
+                name = archivesBaseName
+                artifactId = archivesBaseName
+                packaging = 'jar'
+                description = project.description
+                url = 'https://github.com/CDAGaming/UniCore'
+
+                scm {
+                    connection = 'scm:git:git://github.com/CDAGaming/UniCore.git'
+                    developerConnection = 'scm:git:ssh://github.com/CDAGaming/UniCore.git'
+                    url = 'https://github.com/CDAGaming/UniCore'
+                }
+                licenses {
+                    license {
+                        name = 'MIT'
+                        url = 'https://github.com/CDAGaming/UniCore/blob/master/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'cdagaming'
+                        name = 'CDAGaming'
+                        email = 'cstack2011@yahoo.com'
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            credentials {
+                username = project.findProperty("mvn.user") ?: System.getenv("OSSRH_USERNAME")
+                password = project.findProperty("mvn.key") ?: System.getenv("OSSRH_PASSWORD")
+            }
+
+            def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = version.endsWith('-SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+        }
+    }
+}
+
+signing {
+    useGpgCmd()
+    sign publishing.publications.mavenJava
+}
