@@ -10,7 +10,6 @@ plugins {
     id 'signing'
     id 'maven-publish'
     id 'com.diffplug.spotless' version '6.24.0'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 version = "${build_version}" + (project.hasProperty("version_snapshot") ? "-SNAPSHOT" : "")
@@ -59,10 +58,10 @@ dependencies {
     implementation("com.google.code.findbugs:jsr305:3.0.2")
     implementation("com.github.spotbugs:spotbugs-annotations:4.8.3")
 
-    shade group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
-    shade group: 'org.slf4j', name: 'slf4j-api', version: '2.0.10'
-    shade group: 'net.lenni0451', name: 'Reflect', version: "${reflect_version}"
-    shade group: 'io.github.classgraph', name: 'classgraph', version: "${classgraph_version}"
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.10'
+    implementation group: 'net.lenni0451', name: 'Reflect', version: "${reflect_version}"
+    implementation group: 'io.github.classgraph', name: 'classgraph', version: "${classgraph_version}"
 }
 
 [jar].each {
@@ -84,12 +83,6 @@ gradle.projectsEvaluated {
     [javadoc].each {
         it.options.encoding = "UTF-8"
     }
-}
-
-shadowJar {
-    configurations = [project.configurations.shade, project.configurations.shadeOnly]
-    archiveClassifier.set('')
-    exclude 'META-INF/versions/**'
 }
 
 [compileJava].each {
