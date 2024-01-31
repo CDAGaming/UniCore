@@ -139,9 +139,7 @@ assemble.dependsOn javadocJar, sourcesJar
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifact shadowJar
-            artifact javadocJar
-            artifact sourcesJar
+            from components.java
 
             pom {
                 name = archivesBaseName
