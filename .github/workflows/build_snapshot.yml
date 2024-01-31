@@ -42,7 +42,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: UniCore Snapshot Artifacts
-          path: build/libs/*.jar
+          path: ./build/libs/
 
       - name: stop daemon
         run: ./gradlew --stop
