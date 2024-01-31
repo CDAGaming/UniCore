@@ -27,6 +27,10 @@ package io.github.cdagaming.unicore;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.cdagaming.unicore.integrations.logging.LoggingImpl;
 import io.github.cdagaming.unicore.integrations.logging.SLF4JLogger;
+import io.github.cdagaming.unicore.utils.FileUtils;
+
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * Constant Variables and Methods used throughout the Application
@@ -54,4 +58,22 @@ public class Constants {
      * The Application's Instance of {@link LoggingImpl} for Logging Information
      */
     public static final LoggingImpl LOG = new SLF4JLogger(APP_ID);
+
+    /**
+     * Retrieve the Timer Instance for this Class, used for Scheduling Events
+     *
+     * @return the Timer Instance for this Class
+     */
+    public static ScheduledExecutorService getThreadPool() {
+        return FileUtils.getThreadPool(NAME);
+    }
+
+    /**
+     * Retrieve the Thread Factory Instance for this Class, used for Scheduling Events
+     *
+     * @return the Thread Factory Instance for this class
+     */
+    public static ThreadFactory getThreadFactory() {
+        return FileUtils.getThreadFactory(NAME);
+    }
 }

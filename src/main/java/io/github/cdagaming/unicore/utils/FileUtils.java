@@ -68,39 +68,71 @@ public class FileUtils {
      * The list of the currently detected class names
      */
     private static final Map<String, ClassInfo> CLASS_MAP = StringUtils.newHashMap();
-    /**
-     * Thread Factory Instance for this Class, used for Scheduling Events
-     */
-    private static final ThreadFactory threadFactory = r -> {
-        final Thread t = new Thread(r, Constants.NAME);
-        t.setDaemon(true);
-        return t;
-    };
-    /**
-     * Timer Instance for this Class, used for Scheduling Events
-     */
-    private static final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor(threadFactory);
+    private static final Map<String, Pair<ScheduledExecutorService, ThreadFactory>> THREAD_FACTORY_MAP = StringUtils.newHashMap();
     /**
      * Whether the class list from {@link FileUtils#scanClasses()} is being iterated upon
      */
     private static boolean ARE_CLASSES_LOADING = false;
 
     /**
+     * Shutdown the specified Thread Factories
+     *
+     * @param args the thread factories to shut down
+     */
+    public static void shutdownScheduler(final String... args) {
+        for (String name : args) {
+            if (THREAD_FACTORY_MAP.containsKey(name)) {
+                THREAD_FACTORY_MAP.get(name).getFirst().shutdown();
+            }
+        }
+    }
+
+    /**
+     * Shutdown all registered Thread Factories
+     */
+    public static void shutdownSchedulers() {
+        for (Pair<ScheduledExecutorService, ThreadFactory> data : THREAD_FACTORY_MAP.values()) {
+            data.getFirst().shutdown();
+        }
+    }
+
+    /**
+     * Retrieve or create a Scheduler pair for this Class, used for Scheduling Events
+     *
+     * @param name The name for the instance
+     * @return the created Scheduler pair, containing the {@link ScheduledExecutorService} and {@link ThreadFactory}
+     */
+    public static Pair<ScheduledExecutorService, ThreadFactory> getOrCreateScheduler(final String name) {
+        if (!THREAD_FACTORY_MAP.containsKey(name)) {
+            final ThreadFactory threadFactory = r -> {
+                final Thread t = new Thread(r, name);
+                t.setDaemon(true);
+                return t;
+            };
+            final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor(threadFactory);
+            THREAD_FACTORY_MAP.put(name, new Pair<>(exec, threadFactory));
+        }
+        return THREAD_FACTORY_MAP.get(name);
+    }
+
+    /**
      * Retrieve the Timer Instance for this Class, used for Scheduling Events
      *
+     * @param name The name for the instance
      * @return the Timer Instance for this Class
      */
-    public static ScheduledExecutorService getThreadPool() {
-        return exec;
+    public static ScheduledExecutorService getThreadPool(final String name) {
+        return getOrCreateScheduler(name).getFirst();
     }
 
     /**
      * Retrieve the Thread Factory Instance for this Class, used for Scheduling Events
      *
+     * @param name The name for the instance
      * @return the Thread Factory Instance for this class
      */
-    public static ThreadFactory getThreadFactory() {
-        return threadFactory;
+    public static ThreadFactory getThreadFactory(final String name) {
+        return getOrCreateScheduler(name).getSecond();
     }
 
     /**
@@ -632,7 +664,7 @@ public class FileUtils {
      * Begin a new Thread, executing {@link FileUtils#scanClasses()}
      */
     public static void detectClasses() {
-        getThreadFactory().newThread(FileUtils::scanClasses).start();
+        Constants.getThreadFactory().newThread(FileUtils::scanClasses).start();
     }
 
     /**
