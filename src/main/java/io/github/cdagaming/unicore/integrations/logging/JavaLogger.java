@@ -41,6 +41,12 @@ public class JavaLogger extends LoggingImpl {
      */
     private final Logger logInstance;
 
+    /**
+     * Initializes a new Logger
+     *
+     * @param loggerName The name of the Logger
+     * @param debug      Whether to initialize the logger in debug mode
+     */
     public JavaLogger(final String loggerName, final boolean debug) {
         super(loggerName, debug);
 
@@ -56,6 +62,11 @@ public class JavaLogger extends LoggingImpl {
         this.logInstance = logger != null ? logger : Logger.getLogger(loggerName);
     }
 
+    /**
+     * Initializes a new Logger
+     *
+     * @param loggerName The name of the Logger
+     */
     public JavaLogger(final String loggerName) {
         this(loggerName, false);
     }

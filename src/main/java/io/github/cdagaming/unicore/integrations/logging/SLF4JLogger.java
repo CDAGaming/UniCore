@@ -38,11 +38,22 @@ public class SLF4JLogger extends LoggingImpl {
      */
     private final Logger logInstance;
 
+    /**
+     * Initializes a new Logger
+     *
+     * @param loggerName The name of the Logger
+     * @param debug      Whether to initialize the logger in debug mode
+     */
     public SLF4JLogger(final String loggerName, final boolean debug) {
         super(loggerName, debug);
         this.logInstance = LoggerFactory.getLogger(loggerName);
     }
 
+    /**
+     * Initializes a new Logger
+     *
+     * @param loggerName The name of the Logger
+     */
     public SLF4JLogger(final String loggerName) {
         this(loggerName, false);
     }

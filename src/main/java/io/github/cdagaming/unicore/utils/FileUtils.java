@@ -45,6 +45,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.stream.Stream;
 
 /**
@@ -54,6 +57,10 @@ import java.util.stream.Stream;
  */
 public class FileUtils {
     /**
+     * The Current Thread's Class Loader, used to dynamically receive data as needed
+     */
+    public static final ClassLoader CLASS_LOADER = Thread.currentThread().getContextClassLoader();
+    /**
      * A GSON Json Builder Instance
      */
     private static final GsonBuilder GSON_BUILDER = new GsonBuilder();
@@ -62,9 +69,39 @@ public class FileUtils {
      */
     private static final Map<String, ClassInfo> CLASS_MAP = StringUtils.newHashMap();
     /**
+     * Thread Factory Instance for this Class, used for Scheduling Events
+     */
+    private static final ThreadFactory threadFactory = r -> {
+        final Thread t = new Thread(r, Constants.NAME);
+        t.setDaemon(true);
+        return t;
+    };
+    /**
+     * Timer Instance for this Class, used for Scheduling Events
+     */
+    private static final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor(threadFactory);
+    /**
      * Whether the class list from {@link FileUtils#scanClasses()} is being iterated upon
      */
     private static boolean ARE_CLASSES_LOADING = false;
+
+    /**
+     * Retrieve the Timer Instance for this Class, used for Scheduling Events
+     *
+     * @return the Timer Instance for this Class
+     */
+    public static ScheduledExecutorService getThreadPool() {
+        return exec;
+    }
+
+    /**
+     * Retrieve the Thread Factory Instance for this Class, used for Scheduling Events
+     *
+     * @return the Thread Factory Instance for this class
+     */
+    public static ThreadFactory getThreadFactory() {
+        return threadFactory;
+    }
 
     /**
      * Retrieves Raw Data and Converts it into a Parsed Json Syntax
@@ -569,7 +606,7 @@ public class FileUtils {
      * @return the valid {@link Class} or null
      */
     public static Class<?> findValidClass(final boolean useClassLoader, final String... paths) {
-        return findValidClass(useClassLoader ? Constants.CLASS_LOADER : null, paths);
+        return findValidClass(useClassLoader ? CLASS_LOADER : null, paths);
     }
 
     /**
@@ -595,7 +632,7 @@ public class FileUtils {
      * Begin a new Thread, executing {@link FileUtils#scanClasses()}
      */
     public static void detectClasses() {
-        Constants.getThreadFactory().newThread(FileUtils::scanClasses).start();
+        getThreadFactory().newThread(FileUtils::scanClasses).start();
     }
 
     /**
@@ -619,7 +656,7 @@ public class FileUtils {
             if (OSUtils.JAVA_SPEC < 16) {
                 // If we are below Java 16, we can just use the Thread's classloader
                 // See: https://github.com/classgraph/classgraph/wiki#running-on-jdk-16
-                graphInfo.overrideClassLoaders(Constants.CLASS_LOADER);
+                graphInfo.overrideClassLoaders(CLASS_LOADER);
             }
 
             try (ScanResult scanResult = graphInfo.scan()) {
@@ -760,7 +797,7 @@ public class FileUtils {
         boolean useFallback = false;
 
         try {
-            in = Constants.CLASS_LOADER.getResourceAsStream(pathToSearch);
+            in = CLASS_LOADER.getResourceAsStream(pathToSearch);
         } catch (Exception ex) {
             useFallback = true;
         }
@@ -783,7 +820,7 @@ public class FileUtils {
         boolean useFallback = false;
 
         try {
-            in = Constants.CLASS_LOADER.getResource(pathToSearch);
+            in = CLASS_LOADER.getResource(pathToSearch);
         } catch (Exception ex) {
             useFallback = true;
         }

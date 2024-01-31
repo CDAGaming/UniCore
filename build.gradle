@@ -90,8 +90,8 @@ gradle.projectsEvaluated {
     it.doLast {
         ProcessClasses.process(
                 path, [
-                "APP_NAME"    : project.name,
-                "VERSION_ID"  : project.version.toString()
+                "APP_NAME"  : project.name,
+                "VERSION_ID": project.version.toString()
         ]
         )
     }
