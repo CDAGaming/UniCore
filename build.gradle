@@ -29,6 +29,12 @@ boolean modernTargetSupport = targetVersion.isJava9Compatible()
         it.sourceCompatibility = sourceVersion
         it.targetCompatibility = targetVersion
     }
+    it.withSourcesJar()
+    it.withJavadocJar()
+}
+
+javadoc {
+    failOnError = false
 }
 
 spotless {
@@ -96,25 +102,6 @@ gradle.projectsEvaluated {
         )
     }
 }
-
-tasks.register('javadocJar', Jar) {
-    dependsOn javadoc
-    from javadoc.destinationDir
-    archiveClassifier.set('javadoc')
-}
-
-tasks.register('sourcesJar', Jar) {
-    from sourceSets.main.allSource
-    archiveClassifier.set('sources')
-}
-
-artifacts {
-    archives jar
-    archives javadocJar
-    archives sourcesJar
-}
-
-assemble.dependsOn javadocJar, sourcesJar
 
 [compileJava].each {
     it.options.encoding = 'UTF-8'
