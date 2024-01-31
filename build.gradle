@@ -14,7 +14,7 @@ plugins {
 
 version = "${build_version}" + (project.hasProperty("version_snapshot") ? "-SNAPSHOT" : "")
 group = "${maven_group}"
-description = 'TBD - Coming Soon'
+description = 'A collection of API Utilities designed for multiple versions of Java'
 base.archivesName = "${archives_base_name}"
 
 Jvm currentJvm = Jvm.current()
