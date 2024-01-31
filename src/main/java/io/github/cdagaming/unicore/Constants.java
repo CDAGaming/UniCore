@@ -79,12 +79,6 @@ public class Constants {
     private static final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor(threadFactory);
 
     /**
-     * If Loading of game data has been completed<p>
-     * Becomes true after callbacks synchronize if previously false but game is loaded
-     */
-    public static boolean HAS_GAME_LOADED = false;
-
-    /**
      * Retrieve the Timer Instance for this Class, used for Scheduling Events
      *
      * @return the Timer Instance for this Class

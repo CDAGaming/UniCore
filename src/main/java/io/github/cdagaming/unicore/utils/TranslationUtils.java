@@ -193,18 +193,16 @@ public class TranslationUtils {
         final String currentLanguageId = getCurrentLanguage();
         final boolean hasLanguageChanged = (!languageId.equals(currentLanguageId) &&
                 (!hasTranslationsFrom(currentLanguageId) || !requestMap.get(currentLanguageId).isEmpty()));
-        if (Constants.HAS_GAME_LOADED) {
-            if (needsSync) {
-                // Sync All if we need to (Normally for initialization or reload purposes)
-                final List<String> requestedKeys = StringUtils.newArrayList(requestMap.keySet());
-                for (String key : requestedKeys) {
-                    syncTranslations(key, false);
-                }
-                needsSync = false;
-            } else if (hasLanguageChanged) {
-                // Otherwise, only sync the current language if needed
-                syncTranslations(currentLanguageId);
+        if (needsSync) {
+            // Sync All if we need to (Normally for initialization or reload purposes)
+            final List<String> requestedKeys = StringUtils.newArrayList(requestMap.keySet());
+            for (String key : requestedKeys) {
+                syncTranslations(key, false);
             }
+            needsSync = false;
+        } else if (hasLanguageChanged) {
+            // Otherwise, only sync the current language if needed
+            syncTranslations(currentLanguageId);
         }
     }
 
