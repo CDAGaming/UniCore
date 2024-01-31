@@ -55,8 +55,8 @@ dependencies {
     }
 
     // Annotations
-    implementation("com.google.code.findbugs:jsr305:3.0.2")
-    implementation("com.github.spotbugs:spotbugs-annotations:4.8.3")
+    compileOnly("com.google.code.findbugs:jsr305:3.0.2")
+    compileOnly("com.github.spotbugs:spotbugs-annotations:4.8.3")
 
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.10'
