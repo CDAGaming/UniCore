@@ -92,18 +92,6 @@ gradle.projectsEvaluated {
 }
 
 [compileJava].each {
-    java.nio.file.Path path = it.destinationDirectory.asFile.getOrNull().toPath()
-    it.doLast {
-        ProcessClasses.process(
-                path, [
-                "APP_NAME"  : project.name,
-                "VERSION_ID": project.version.toString()
-        ]
-        )
-    }
-}
-
-[compileJava].each {
     it.options.encoding = 'UTF-8'
     it.options.deprecation = true
     it.options.fork = true
@@ -113,6 +101,16 @@ gradle.projectsEvaluated {
     // We"ll use that if it"s available, but otherwise we"ll use the older option.
     if (modernSourceSupport) {
         it.options.release.set(Integer.parseInt(targetVersion.majorVersion))
+    }
+
+    java.nio.file.Path path = it.destinationDirectory.asFile.getOrNull().toPath()
+    it.doLast {
+        ProcessClasses.process(
+                path, [
+                "APP_NAME"  : project.name,
+                "VERSION_ID": project.version.toString()
+        ]
+        )
     }
 }
 
