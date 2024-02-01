@@ -24,8 +24,6 @@
 
 package io.github.cdagaming.unicore.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import io.github.cdagaming.unicore.Constants;
 
 import java.io.BufferedReader;
@@ -50,10 +48,6 @@ public class UrlUtils {
      * The User Agent to Identify As when Accessing other URLs
      */
     private static final String USER_AGENT = Constants.APP_ID + "/" + Constants.VERSION_ID;
-    /**
-     * The GSON Json Builder to Use while Parsing Json
-     */
-    private static final Gson GSON = new GsonBuilder().create();
     /**
      * The Maximum HTTP Redirects to allow
      */
@@ -191,8 +185,8 @@ public class UrlUtils {
      * @return The URLs Output, as Formatted Json
      * @throws Exception If a connection is unable to be established or parsing fails
      */
-    public static <T> T getJSONFromURL(final String url, final Class<T> targetClass) throws Exception {
-        return getJSONFromURL(new URL(url), targetClass);
+    public static <T> T getJsonFromURL(final String url, final Class<T> targetClass) throws Exception {
+        return getJsonFromURL(new URL(url), targetClass);
     }
 
     /**
@@ -204,8 +198,8 @@ public class UrlUtils {
      * @return The URLs Output, as Formatted Json
      * @throws Exception If a connection is unable to be established or parsing fails
      */
-    public static <T> T getJSONFromURL(final URL url, final Class<T> targetClass) throws Exception {
-        return GSON.fromJson(getURLStreamReader(url, "UTF-8"), targetClass);
+    public static <T> T getJsonFromURL(final URL url, final Class<T> targetClass) throws Exception {
+        return FileUtils.getJsonData(getURLText(url, "UTF-8"), targetClass);
     }
 
     /**
