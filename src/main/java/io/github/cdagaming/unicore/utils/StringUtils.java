@@ -144,14 +144,15 @@ public class StringUtils {
     /**
      * Attempts to Convert the specified data into a Valid interpretable Java Color
      *
-     * @param data the raw interpretable data
+     * @param data     the raw interpretable data
+     * @param hasAlpha Whether the alpha bits are valid
      * @return A Valid Java Color, if successful
      */
-    public static Color getColorFrom(final long data) {
-        // Extract the alpha component. If it's 0 and the data is within the RGB range, default to 255.
-        long alpha = (data >> 24) & 0xFF;
-        if (alpha == 0 && (data <= 0xFFFFFF)) {
-            alpha = 255; // Default alpha to fully opaque if it seems "unspecified"
+    public static Color getColorFrom(final long data, final boolean hasAlpha) {
+        // Extract the alpha component. If not using alpha bits, default to 255.
+        long alpha = 255;
+        if (hasAlpha) {
+            alpha = (data >> 24) & 0xFF;
         }
         return getColorFrom(
                 (int) ((data >> 16) & 0xFF),
@@ -159,6 +160,16 @@ public class StringUtils {
                 (int) (data & 0xFF),
                 (int) alpha
         );
+    }
+
+    /**
+     * Attempts to Convert the specified data into a Valid interpretable Java Color
+     *
+     * @param data the raw interpretable data
+     * @return A Valid Java Color, if successful
+     */
+    public static Color getColorFrom(final long data) {
+        return getColorFrom(data, false);
     }
 
     /**
@@ -177,7 +188,7 @@ public class StringUtils {
         if (s == null) s = m.group(2);
         if (s == null) throw new IllegalStateException();
         long color = Long.parseLong(s, 16);
-        return getColorFrom(color);
+        return getColorFrom(color, s.length() == 8);
     }
 
     /**
@@ -210,10 +221,10 @@ public class StringUtils {
         }
 
         if (startColorObj == null) {
-            startColorObj = getColorFrom(startColor);
+            startColorObj = getColorFrom(startColor, true);
         }
         if (endColorObj == null) {
-            endColorObj = getColorFrom(endColor);
+            endColorObj = getColorFrom(endColor, true);
         }
         return new Pair<>(startColorObj, endColorObj);
     }
