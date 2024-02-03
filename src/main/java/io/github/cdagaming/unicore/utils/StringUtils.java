@@ -147,12 +147,17 @@ public class StringUtils {
      * @param data the raw interpretable data
      * @return A Valid Java Color, if successful
      */
-    public static Color getColorFrom(final int data) {
+    public static Color getColorFrom(final long data) {
+        // Extract the alpha component. If it's 0 and the data is within the RGB range, default to 255.
+        long alpha = (data >> 24) & 0xFF;
+        if (alpha == 0 && (data <= 0xFFFFFF)) {
+            alpha = 255; // Default alpha to fully opaque if it seems "unspecified"
+        }
         return getColorFrom(
-                (data >> 16 & 255),
-                (data >> 8 & 255),
-                (data & 255),
-                (data >> 24 & 255)
+                (int) ((data >> 16) & 0xFF),
+                (int) ((data >> 8) & 0xFF),
+                (int) (data & 255),
+                (int) alpha
         );
     }
 
@@ -171,19 +176,16 @@ public class StringUtils {
         String s = m.group(1);
         if (s == null) s = m.group(2);
         if (s == null) throw new IllegalStateException();
-        long l = Long.parseLong(s, 16);
-        int a = m.group(1) != null ? (int) ((l >> 24) & 0xFF) : 0xFF;
-        int r = (int) ((l >> 16) & 0xFF);
-        int g = (int) ((l >> 8) & 0xFF);
-        int b = (int) (l & 0xFF);
-        return getColorFrom(r, g, b, a);
+        long color = Long.parseLong(s, 16);
+        return getColorFrom(color);
     }
 
     /**
      * Attempt to retrieve color info for the specified entries
+     * <p>Returns {@link Color#WHITE} if start color is invalid
      *
-     * @param startColorCode The Starting Color Object
-     * @param endColorCode   The Ending Color Object
+     * @param startColorCode The Starting Color Object (Required)
+     * @param endColorCode   The Ending Color Object (Must match startColor format, returns startColor if invalid)
      * @return the processed output
      */
     public static Pair<Color, Color> findColor(final String startColorCode, final String endColorCode) {
@@ -273,7 +275,7 @@ public class StringUtils {
      * @return {@link Boolean#TRUE} if Entry is classified as a valid Color Code, alongside extra data
      */
     public static Pair<Boolean, Matcher> isValidColor(final String entry) {
-        final Matcher m = Pattern.compile("^(?:0x([\\dA-Fa-f]{1,8})|#?([\\dA-Fa-f]{6}))$").matcher(entry);
+        final Matcher m = Pattern.compile("^(?:0x([\\dA-Fa-f]{1,8})|#?([\\dA-Fa-f]{6}([\\dA-Fa-f]{2})?))$").matcher(entry);
         return new Pair<>(m.find(), m);
     }
 
