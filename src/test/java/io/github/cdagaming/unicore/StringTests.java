@@ -29,8 +29,9 @@ import io.github.cdagaming.unicore.utils.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
+import java.util.regex.Matcher;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class StringTests {
     @Test
@@ -95,5 +96,131 @@ class StringTests {
         colors = StringUtils.findColor("#FF0000", "invalid"); // Red to Red
         assertEquals(new Color(255, 0, 0), colors.getFirst());
         assertEquals(new Color(255, 0, 0), colors.getSecond());
+    }
+
+    @Test
+    public void testOffsetColor() {
+        Color original = new Color(100, 150, 200);
+        float factor = 0.5f;
+
+        Color result = StringUtils.offsetColor(original, factor);
+
+        assertEquals(new Color(50, 75, 100), result);
+    }
+
+    @Test
+    public void testOffsetColorWithFactorGreaterThanOne() {
+        Color original = new Color(100, 100, 100);
+        float factor = 1.5f;
+
+        Color result = StringUtils.offsetColor(original, factor);
+
+        assertEquals(new Color(150, 150, 150, 255), result);
+    }
+
+    @Test
+    public void testOffsetColorWithZeroFactor() {
+        Color original = new Color(100, 150, 200);
+        float factor = 0f;
+
+        Color result = StringUtils.offsetColor(original, factor);
+
+        assertEquals(new Color(0, 0, 0, original.getAlpha()), result);
+    }
+
+    @Test
+    public void testFindColorWithColorObjects() {
+        Color startColor = Color.RED;
+        Color endColor = Color.BLUE;
+
+        Pair<Color, Color> result = StringUtils.findColor(startColor, endColor);
+
+        assertEquals(startColor, result.getFirst());
+        assertEquals(endColor, result.getSecond());
+    }
+
+    @Test
+    public void testFindColorWithOneColorObject() {
+        Color startColor = Color.RED;
+
+        Color result = StringUtils.findColor(startColor);
+
+        assertEquals(startColor, result);
+    }
+
+    @Test
+    public void testFindColorWithStrings() {
+        String startColorCode = "#FF0000"; // Red
+        String endColorCode = "#0000FF"; // Blue
+
+        Pair<Color, Color> result = StringUtils.findColor(startColorCode, endColorCode);
+
+        assertEquals(Color.RED, result.getFirst());
+        assertEquals(Color.BLUE, result.getSecond());
+    }
+
+    @Test
+    public void testFindColorWithNullEndColor() {
+        Color startColor = Color.RED;
+
+        Pair<Color, Color> result = StringUtils.findColor(startColor, null);
+
+        assertEquals(startColor, result.getFirst());
+        assertEquals(startColor, result.getSecond());
+    }
+
+    @Test
+    public void testIsValidColorWithHexRGB() {
+        Pair<Boolean, Matcher> result = StringUtils.isValidColor("#FFAABB");
+        assertTrue(result.getFirst());
+    }
+
+    @Test
+    public void testIsValidColorWithHexARGB() {
+        Pair<Boolean, Matcher> result = StringUtils.isValidColor("#80FFAABB");
+        assertTrue(result.getFirst());
+    }
+
+    @Test
+    public void testIsValidColorWith0xRGB() {
+        Pair<Boolean, Matcher> result = StringUtils.isValidColor("0xFFAABB");
+        assertTrue(result.getFirst());
+    }
+
+    @Test
+    public void testIsValidColorWith0xARGB() {
+        Pair<Boolean, Matcher> result = StringUtils.isValidColor("0x80FFAABB");
+        assertTrue(result.getFirst());
+    }
+
+    @Test
+    public void testIsValidColorWithInvalidCode() {
+        Pair<Boolean, Matcher> result = StringUtils.isValidColor("#GGHHII");
+        assertFalse(result.getFirst());
+    }
+
+    @Test
+    public void testIsValidColorWithShortHex() {
+        Pair<Boolean, Matcher> result = StringUtils.isValidColor("#FFF");
+        assertFalse(result.getFirst(), "Should fail for short (3-digit) hex codes.");
+    }
+
+    @Test
+    public void testIsValidColorWithLongInvalidHex() {
+        Pair<Boolean, Matcher> result = StringUtils.isValidColor("#FFAABBCCEE");
+        assertFalse(result.getFirst(), "Should fail for hex codes longer than 8 digits.");
+    }
+
+    @Test
+    public void testIsValidColorWithEmptyString() {
+        Pair<Boolean, Matcher> result = StringUtils.isValidColor("");
+        assertFalse(result.getFirst(), "Should fail for empty strings.");
+    }
+
+    @Test
+    public void testIsValidColorWithNull() {
+        assertThrows(NullPointerException.class, () -> {
+            StringUtils.isValidColor(null);
+        }, "Should throw NullPointerException for null inputs.");
     }
 }
