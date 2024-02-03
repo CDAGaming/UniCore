@@ -156,7 +156,7 @@ public class StringUtils {
         return getColorFrom(
                 (int) ((data >> 16) & 0xFF),
                 (int) ((data >> 8) & 0xFF),
-                (int) (data & 255),
+                (int) (data & 0xFF),
                 (int) alpha
         );
     }
