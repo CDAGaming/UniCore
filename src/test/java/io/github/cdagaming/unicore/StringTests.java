@@ -59,6 +59,9 @@ class StringTests {
         // Test with a valid integer
         Color color = StringUtils.getColorFrom(0xFF0000); // Red
         assertEquals(new Color(255, 0, 0), color);
+
+        color = StringUtils.getColorFrom(0x00FFFFFF, true); // Transparent White
+        assertEquals(new Color(255, 255, 255, 0), color);
     }
 
     @Test
