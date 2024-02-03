@@ -38,7 +38,7 @@ import java.util.concurrent.ThreadFactory;
  * @author CDAGaming
  */
 @SuppressFBWarnings("MS_CANNOT_BE_FINAL")
-public class Constants {
+public class UniCore {
     /**
      * The Application's Name
      */

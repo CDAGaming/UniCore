@@ -24,7 +24,7 @@
 
 package io.github.cdagaming.unicore.utils;
 
-import io.github.cdagaming.unicore.Constants;
+import io.github.cdagaming.unicore.UniCore;
 import io.github.cdagaming.unicore.impl.LockObject;
 
 import java.time.Instant;
@@ -148,7 +148,7 @@ public class ScheduleUtils {
                     refreshedCallbacks = false;
                 }));
             } catch (Exception ex) {
-                Constants.LOG.error(ex);
+                UniCore.LOG.error(ex);
             }
         }
     }

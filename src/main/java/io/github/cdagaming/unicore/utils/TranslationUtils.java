@@ -24,7 +24,7 @@
 
 package io.github.cdagaming.unicore.utils;
 
-import io.github.cdagaming.unicore.Constants;
+import io.github.cdagaming.unicore.UniCore;
 import io.github.cdagaming.unicore.impl.TriFunction;
 
 import java.io.BufferedReader;
@@ -496,8 +496,8 @@ public class TranslationUtils {
 
                         in.close();
                     } catch (Exception ex) {
-                        Constants.LOG.error("An exception has occurred while loading Translation Mappings, aborting scan to prevent issues...");
-                        Constants.LOG.debugError(ex);
+                        UniCore.LOG.error("An exception has occurred while loading Translation Mappings, aborting scan to prevent issues...");
+                        UniCore.LOG.debugError(ex);
                         hasError = true;
                         break;
                     }
@@ -511,12 +511,12 @@ public class TranslationUtils {
         }
 
         if (hasError) {
-            Constants.LOG.error("Translations for " + getModId() + " do not exist for " + languageId);
+            UniCore.LOG.error("Translations for " + getModId() + " do not exist for " + languageId);
             translationMap.clear();
             requestMap.put(languageId, translationMap);
             setLanguage(defaultLanguageId);
         } else {
-            Constants.LOG.debugInfo((hadBefore ? "Refreshed" : "Added") + " translations for " + getModId() + " for " + languageId);
+            UniCore.LOG.debugInfo((hadBefore ? "Refreshed" : "Added") + " translations for " + getModId() + " for " + languageId);
             requestMap.put(languageId, translationMap);
         }
         return translationMap;
@@ -569,15 +569,15 @@ public class TranslationUtils {
                 hasError = true;
             }
         } catch (Exception ex) {
-            Constants.LOG.error("Exception parsing " + translationKey + " from " + languageId);
-            Constants.LOG.debugError(ex);
+            UniCore.LOG.error("Exception parsing " + translationKey + " from " + languageId);
+            UniCore.LOG.debugError(ex);
             return translationKey;
         }
 
         if (hasError) {
-            Constants.LOG.debugError("Unable to retrieve a translation for " + translationKey + " from " + languageId);
+            UniCore.LOG.debugError("Unable to retrieve a translation for " + translationKey + " from " + languageId);
             if (!languageId.equals(getDefaultLanguage())) {
-                Constants.LOG.debugError("Attempting to retrieve default translation for " + translationKey);
+                UniCore.LOG.debugError("Attempting to retrieve default translation for " + translationKey);
                 return translateFrom(getDefaultLanguage(), stripColors, stripFormatting, translationKey, parameters);
             }
         }

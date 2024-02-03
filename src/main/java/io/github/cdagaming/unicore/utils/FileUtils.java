@@ -28,7 +28,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
-import io.github.cdagaming.unicore.Constants;
+import io.github.cdagaming.unicore.UniCore;
 import io.github.cdagaming.unicore.impl.Pair;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
@@ -273,15 +273,15 @@ public class FileUtils {
         try {
             assertFileExists(file);
         } catch (Exception ex1) {
-            Constants.LOG.error("Failed to create json data @ " + file.getAbsolutePath());
-            Constants.LOG.debugError(ex1);
+            UniCore.LOG.error("Failed to create json data @ " + file.getAbsolutePath());
+            UniCore.LOG.debugError(ex1);
         }
 
         try (Writer writer = new OutputStreamWriter(Files.newOutputStream(file.toPath()), Charset.forName(encoding))) {
             builder.create().toJson(json, writer);
         } catch (Exception ex2) {
-            Constants.LOG.error("Failed to write json data @ " + file.getAbsolutePath());
-            Constants.LOG.debugError(ex2);
+            UniCore.LOG.error("Failed to write json data @ " + file.getAbsolutePath());
+            UniCore.LOG.debugError(ex2);
         }
     }
 
@@ -311,16 +311,16 @@ public class FileUtils {
      */
     public static void downloadFile(final String urlString, final File file) {
         try {
-            Constants.LOG.info("Downloading \"%s\" to \"%s\"... (From: \"%s\")", file.getName(), file.getAbsolutePath(), urlString);
+            UniCore.LOG.info("Downloading \"%s\" to \"%s\"... (From: \"%s\")", file.getName(), file.getAbsolutePath(), urlString);
             final URL url = new URL(urlString);
             if (file.exists() && !file.delete()) {
-                Constants.LOG.error("Failed to remove: " + file.getName());
+                UniCore.LOG.error("Failed to remove: " + file.getName());
             }
             copyStreamToFile(UrlUtils.getURLStream(url), file);
-            Constants.LOG.info("\"%s\" has been successfully downloaded to \"%s\"! (From: \"%s\")", file.getName(), file.getAbsolutePath(), urlString);
+            UniCore.LOG.info("\"%s\" has been successfully downloaded to \"%s\"! (From: \"%s\")", file.getName(), file.getAbsolutePath(), urlString);
         } catch (Exception ex) {
-            Constants.LOG.error("Failed to download \"%s\" from \"%s\"", file.getName(), urlString);
-            Constants.LOG.debugError(ex);
+            UniCore.LOG.error("Failed to download \"%s\" from \"%s\"", file.getName(), urlString);
+            UniCore.LOG.debugError(ex);
         }
     }
 
@@ -664,7 +664,7 @@ public class FileUtils {
      * Begin a new Thread, executing {@link FileUtils#scanClasses()}
      */
     public static void detectClasses() {
-        Constants.getThreadFactory().newThread(FileUtils::scanClasses).start();
+        UniCore.getThreadFactory().newThread(FileUtils::scanClasses).start();
     }
 
     /**
@@ -699,7 +699,7 @@ public class FileUtils {
                     }
                 }
             } catch (Throwable ex) {
-                Constants.LOG.debugError(ex);
+                UniCore.LOG.debugError(ex);
             }
 
             ARE_CLASSES_LOADING = false;

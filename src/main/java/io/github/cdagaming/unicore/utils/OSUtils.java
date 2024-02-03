@@ -24,7 +24,7 @@
 
 package io.github.cdagaming.unicore.utils;
 
-import io.github.cdagaming.unicore.Constants;
+import io.github.cdagaming.unicore.UniCore;
 
 import java.io.IOException;
 import java.util.List;
@@ -128,7 +128,7 @@ public class OSUtils {
      * @return {@link Boolean#TRUE} upon success
      */
     private static boolean runCommand(final String command, final String args, final String file) {
-        Constants.LOG.debugInfo("Trying to exec: [cmd=\"%s\", args=\"%s\", file=\"%s\"]", command, args, file);
+        UniCore.LOG.debugInfo("Trying to exec: [cmd=\"%s\", args=\"%s\", file=\"%s\"]", command, args, file);
         final String[] parts = prepareCommand(command, args, file);
 
         try {
@@ -137,17 +137,17 @@ public class OSUtils {
             try {
                 int retval = p.exitValue();
                 if (retval == 0) {
-                    Constants.LOG.debugError("Process ended immediately.");
+                    UniCore.LOG.debugError("Process ended immediately.");
                 } else {
-                    Constants.LOG.debugError("Process crashed.");
+                    UniCore.LOG.debugError("Process crashed.");
                 }
                 return false;
             } catch (IllegalThreadStateException itse) {
-                Constants.LOG.debugError("Process is running.");
+                UniCore.LOG.debugError("Process is running.");
                 return true;
             }
         } catch (IOException e) {
-            Constants.LOG.debugError("Error running command.", e);
+            UniCore.LOG.debugError("Error running command.", e);
             return false;
         }
     }

@@ -24,7 +24,7 @@
 
 package io.github.cdagaming.unicore.utils;
 
-import io.github.cdagaming.unicore.Constants;
+import io.github.cdagaming.unicore.UniCore;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class UrlUtils {
     /**
      * The User Agent to Identify As when Accessing other URLs
      */
-    private static final String USER_AGENT = Constants.APP_ID + "/" + Constants.VERSION_ID;
+    private static final String USER_AGENT = UniCore.APP_ID + "/" + UniCore.VERSION_ID;
     /**
      * The Maximum HTTP Redirects to allow
      */
@@ -212,7 +212,7 @@ public class UrlUtils {
         try {
             return openUrl(new URI(targetUrl));
         } catch (Exception ex) {
-            Constants.LOG.debugError(ex);
+            UniCore.LOG.debugError(ex);
             return false;
         }
     }
@@ -227,7 +227,7 @@ public class UrlUtils {
         try {
             return openUrl(targetUrl.toURI());
         } catch (Exception ex) {
-            Constants.LOG.debugError(ex);
+            UniCore.LOG.debugError(ex);
             return false;
         }
     }
@@ -245,7 +245,7 @@ public class UrlUtils {
         if (OSUtils.browseWithSystem(targetUrl.toString())) {
             return true;
         }
-        Constants.LOG.error("Failed to go to page: %s", targetUrl.toString());
+        UniCore.LOG.error("Failed to go to page: %s", targetUrl.toString());
         return false;
     }
 
@@ -258,21 +258,21 @@ public class UrlUtils {
     public static boolean browseWithDesktop(final URI uri) {
         try {
             if (!java.awt.Desktop.isDesktopSupported()) {
-                Constants.LOG.debugInfo("Platform is not supported.");
+                UniCore.LOG.debugInfo("Platform is not supported.");
                 return false;
             }
 
             if (!java.awt.Desktop.getDesktop().isSupported(java.awt.Desktop.Action.BROWSE)) {
-                Constants.LOG.debugInfo("BROWSE is not supported.");
+                UniCore.LOG.debugInfo("BROWSE is not supported.");
                 return false;
             }
 
-            Constants.LOG.debugInfo("Trying to use Desktop.getDesktop().browse() with " + uri.toString());
+            UniCore.LOG.debugInfo("Trying to use Desktop.getDesktop().browse() with " + uri.toString());
             java.awt.Desktop.getDesktop().browse(uri);
 
             return true;
         } catch (Throwable t) {
-            Constants.LOG.debugError("Error using desktop browse.", t);
+            UniCore.LOG.debugError("Error using desktop browse.", t);
             return false;
         }
     }

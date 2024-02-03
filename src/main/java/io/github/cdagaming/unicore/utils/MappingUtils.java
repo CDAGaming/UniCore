@@ -24,7 +24,7 @@
 
 package io.github.cdagaming.unicore.utils;
 
-import io.github.cdagaming.unicore.Constants;
+import io.github.cdagaming.unicore.UniCore;
 import io.github.classgraph.ClassInfo;
 
 import java.io.BufferedReader;
@@ -78,7 +78,7 @@ public class MappingUtils {
                                 StringUtils.DEFAULT_CHARSET
                         )
                 )) {
-                    Constants.LOG.debugInfo("Loading Mappings...");
+                    UniCore.LOG.debugInfo("Loading Mappings...");
                     final Instant time = TimeUtils.getCurrentTime();
                     for (String line = reader.readLine(); line != null; line = reader.readLine()) {
                         String[] parts = line.split(" ");
@@ -86,10 +86,10 @@ public class MappingUtils {
                             cm.put(parts[1], parts[2]);
                         }
                     }
-                    Constants.LOG.debugInfo("Loaded Mappings in " + TimeUtils.getDurationFrom(time).toMillis() + "ms");
+                    UniCore.LOG.debugInfo("Loaded Mappings in " + TimeUtils.getDurationFrom(time).toMillis() + "ms");
                 }
             } catch (Throwable ex) {
-                Constants.LOG.debugError(ex);
+                UniCore.LOG.debugError(ex);
             }
             classMap = cm;
         }
