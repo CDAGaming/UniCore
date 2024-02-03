@@ -221,10 +221,10 @@ public class StringUtils {
         }
 
         if (startColorObj == null) {
-            startColorObj = getColorFrom(startColor, true);
+            startColorObj = getColorFrom(startColor);
         }
         if (endColorObj == null) {
-            endColorObj = getColorFrom(endColor, true);
+            endColorObj = getColorFrom(endColor);
         }
         return new Pair<>(startColorObj, endColorObj);
     }
