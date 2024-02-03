@@ -68,6 +68,16 @@ dependencies {
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.10'
     implementation group: 'net.lenni0451', name: 'Reflect', version: "${reflect_version}"
     implementation group: 'io.github.classgraph', name: 'classgraph', version: "${classgraph_version}"
+
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.1"
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+    maxParallelForks Runtime.runtime.availableProcessors()
 }
 
 [jar].each {
