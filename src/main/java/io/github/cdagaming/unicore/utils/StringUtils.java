@@ -221,14 +221,14 @@ public class StringUtils {
 
     /**
      * Attempt to retrieve color info for the specified entries
-     * <p>Returns {@link Color#WHITE} if start color is invalid
+     * <p>Returns {@link Color#WHITE} if start color is invalid (Type-dependent)
      *
      * @param startColorObj The Starting Color Object (Default: {@link Color#WHITE})
      * @param endColorObj   The Ending Color Object (Returns startColor if null or invalid)
      * @return the processed output
      */
     public static Pair<Color, Color> findColor(final Object startColorObj, final Object endColorObj) {
-        Color startColor = Color.white, endColor = null;
+        Color startColor = null, endColor = null;
 
         if (startColorObj instanceof String) {
             startColor = getColorFrom((String) startColorObj);
