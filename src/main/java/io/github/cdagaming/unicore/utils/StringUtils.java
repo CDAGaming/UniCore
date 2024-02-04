@@ -176,12 +176,13 @@ public class StringUtils {
      * Attempts to Convert the specified data into a Valid interpretable Java Color
      *
      * @param hexColor The inputted Hexadecimal Color String
+     * @param fallback The fallback Color to return, if supplied value is invalid
      * @return A Valid Java Color, if successful
      */
-    public static Color getColorFrom(final String hexColor) {
+    public static Color getColorFrom(final String hexColor, final Color fallback) {
         final Pair<Boolean, Matcher> matchData = isValidColor(hexColor);
         if (!matchData.getFirst()) {
-            return Color.white;
+            return fallback;
         }
         final Matcher m = matchData.getSecond();
         String s = m.group(1);
@@ -189,6 +190,16 @@ public class StringUtils {
         if (s == null) throw new IllegalStateException();
         long color = Long.parseLong(s, 16);
         return getColorFrom(color, s.length() == 8);
+    }
+
+    /**
+     * Attempts to Convert the specified data into a Valid interpretable Java Color
+     *
+     * @param hexColor The inputted Hexadecimal Color String
+     * @return A Valid Java Color, if successful
+     */
+    public static Color getColorFrom(final String hexColor) {
+        return getColorFrom(hexColor, Color.white);
     }
 
     /**
