@@ -180,6 +180,7 @@ public class StringUtils {
      * @return A Valid Java Color, if successful
      */
     public static Color getColorFrom(final String hexColor, final Color fallback) {
+        if (isNullOrEmpty(hexColor)) return fallback;
         final Pair<Boolean, Matcher> matchData = isValidColor(hexColor);
         if (!matchData.getFirst()) {
             return fallback;
@@ -203,44 +204,6 @@ public class StringUtils {
     }
 
     /**
-     * Attempt to retrieve color info for the specified entries
-     * <p>Returns {@link Color#WHITE} if start color is invalid
-     *
-     * @param startColorCode The Starting Color Object (Required)
-     * @param endColorCode   The Ending Color Object (Must match startColor format, returns startColor if invalid)
-     * @return the processed output
-     */
-    public static Pair<Color, Color> findColor(final String startColorCode, final String endColorCode) {
-        Color startColorObj = null, endColorObj = null;
-        int startColor = 0xFFFFFF, endColor = 0xFFFFFF;
-
-        if (!isNullOrEmpty(startColorCode)) {
-            if (isValidColor(startColorCode).getFirst()) {
-                startColorObj = getColorFrom(startColorCode);
-                endColorObj = (!isNullOrEmpty(endColorCode) && isValidColor(endColorCode).getFirst()) ? getColorFrom(endColorCode) : startColorObj;
-            } else {
-                // Determine if Start Color Code is a Valid Number
-                final Pair<Boolean, Integer> startColorData = getValidInteger(startColorCode),
-                        endColorData = getValidInteger(endColorCode);
-
-                // Check and ensure that at least one of the Color Codes are correct
-                if (startColorData.getFirst() || endColorData.getFirst()) {
-                    startColor = startColorData.getFirst() ? startColorData.getSecond() : endColor;
-                    endColor = endColorData.getFirst() ? endColorData.getSecond() : startColor;
-                }
-            }
-        }
-
-        if (startColorObj == null) {
-            startColorObj = getColorFrom(startColor);
-        }
-        if (endColorObj == null) {
-            endColorObj = getColorFrom(endColor);
-        }
-        return new Pair<>(startColorObj, endColorObj);
-    }
-
-    /**
      * Offset the specified {@link Color} by the specified factor
      *
      * @param color  the {@link Color} to offset
@@ -258,26 +221,26 @@ public class StringUtils {
 
     /**
      * Attempt to retrieve color info for the specified entries
+     * <p>Returns {@link Color#WHITE} if start color is invalid
      *
-     * @param startColorObj The Starting Color Object
-     * @param endColorObj   The Ending Color Object
+     * @param startColorObj The Starting Color Object (Default: {@link Color#WHITE})
+     * @param endColorObj   The Ending Color Object (Returns startColor if null or invalid)
      * @return the processed output
      */
-    public static Pair<Color, Color> findColor(Object startColorObj, Object endColorObj) {
-        Color startColor = null, endColor = null;
-        endColorObj = endColorObj == null ? startColorObj : endColorObj;
+    public static Pair<Color, Color> findColor(final Object startColorObj, final Object endColorObj) {
+        Color startColor = Color.white, endColor = null;
+
         if (startColorObj instanceof String) {
-            final Pair<Color, Color> colorData = findColor(
-                    (String) startColorObj,
-                    endColorObj instanceof String ? (String) endColorObj : null
+            startColor = getColorFrom((String) startColorObj);
+            endColor = getColorFrom(
+                    endColorObj instanceof String ? (String) endColorObj : (String) startColorObj,
+                    startColor
             );
-            startColor = colorData.getFirst();
-            endColor = colorData.getSecond();
         } else if (startColorObj instanceof Color) {
             startColor = (Color) startColorObj;
             endColor = endColorObj instanceof Color ? (Color) endColorObj : startColor;
         }
-        return new Pair<>(startColor, endColor);
+        return new Pair<>(startColor, endColor != null ? endColor : startColor);
     }
 
     /**

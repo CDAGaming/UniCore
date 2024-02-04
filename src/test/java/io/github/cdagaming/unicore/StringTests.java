@@ -90,7 +90,7 @@ class StringTests {
         // Test with invalid start color and valid end color
         colors = StringUtils.findColor("invalid", "#00FF00"); // Should default to white to Green
         assertEquals(Color.white, colors.getFirst());
-        assertEquals(Color.white, colors.getSecond());
+        assertEquals(Color.green, colors.getSecond());
 
         // Test with valid start color and invalid end color, start color should be used for both
         colors = StringUtils.findColor("#FF0000", "invalid"); // Red to Red
