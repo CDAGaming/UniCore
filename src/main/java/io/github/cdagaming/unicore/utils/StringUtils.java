@@ -317,6 +317,7 @@ public class StringUtils {
      * @param decode   If we are Decoding an already encoded String
      * @return The converted UTF_8 String, if successful
      */
+    @SuppressWarnings("StringOperationCanBeSimplified")
     public static String convertString(final String original, final String encoding, final boolean decode) {
         try {
             if (decode) {

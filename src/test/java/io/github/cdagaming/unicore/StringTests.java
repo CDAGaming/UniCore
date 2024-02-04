@@ -28,7 +28,12 @@ import io.github.cdagaming.unicore.impl.Pair;
 import io.github.cdagaming.unicore.utils.StringUtils;
 import org.junit.jupiter.api.Test;
 
-import java.awt.*;
+import java.awt.Color;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -219,8 +224,125 @@ class StringTests {
 
     @Test
     public void testIsValidColorWithNull() {
-        assertThrows(NullPointerException.class, () -> {
-            StringUtils.isValidColor(null);
-        }, "Should throw NullPointerException for null inputs.");
+        assertThrows(NullPointerException.class, () ->
+                        StringUtils.isValidColor(null),
+                "Should throw NullPointerException for null inputs."
+        );
+    }
+
+    @Test
+    void testGetBytesWithValidEncoding() {
+        String original = "Hello World";
+        byte[] result = StringUtils.getBytes(original, "UTF-8");
+        assertArrayEquals(original.getBytes(StandardCharsets.UTF_8), result);
+    }
+
+    @Test
+    void testGetBytesWithInvalidEncoding() {
+        String original = "Hello World";
+        byte[] result = StringUtils.getBytes(original, "INVALID_ENCODING");
+        assertArrayEquals(original.getBytes(StringUtils.DEFAULT_CHARSET), result);
+    }
+
+    @Test
+    void testGetBytesWithNullEncoding() {
+        String original = "Hello World";
+        byte[] result = StringUtils.getBytes(original);
+        assertArrayEquals(original.getBytes(StringUtils.DEFAULT_CHARSET), result);
+    }
+
+    @Test
+    void testGetStackTraceWithNonNullException() {
+        Exception ex = new Exception("Test exception");
+        String result = StringUtils.getStackTrace(ex);
+        assertTrue(result.contains("Test exception"));
+    }
+
+    @Test
+    void testGetStackTraceWithNullException() {
+        String result = StringUtils.getStackTrace(null);
+        assertEquals("", result);
+    }
+
+    @Test
+    void testConvertStringWithoutDecoding() {
+        String original = "Hello World";
+        String result = StringUtils.convertString(original, "UTF-8", false);
+        assertEquals(original, result);
+    }
+
+    @Test
+    void testConvertStringWithDecoding() {
+        String original = "Hello World";
+        // Assuming the original string is encoded in UTF-8, and we are decoding it back
+        String encoded = new String(StringUtils.getBytes(original, "UTF-8"), StandardCharsets.UTF_8);
+        String result = StringUtils.convertString(encoded, "UTF-8", true);
+        assertEquals(original, result);
+    }
+
+    @Test
+    void testConvertStringWithInvalidEncoding() {
+        String original = "Hello World";
+        // Assuming the method returns the original string on failure
+        String result = StringUtils.convertString(original, "INVALID_ENCODING", false);
+        assertEquals(original, result);
+    }
+
+    @Test
+    void testGetDynamicArrayWithArray() {
+        Object[] original = new Object[]{"one", "two", "three"};
+        Object[] result = StringUtils.getDynamicArray(original);
+        assertArrayEquals(original, result);
+    }
+
+    @Test
+    void testGetDynamicArrayWithNonArray() {
+        String original = "Not an array";
+        Object[] result = StringUtils.getDynamicArray(original);
+        assertNull(result);
+    }
+
+    @Test
+    void testGetDynamicArrayWithPrimitiveArray() {
+        int[] original = new int[]{1, 2, 3};
+        Object[] expected = new Object[]{1, 2, 3}; // Expect to convert primitive array to Object array
+        Object[] result = StringUtils.getDynamicArray(original);
+        assertArrayEquals(expected, result);
+    }
+
+    @Test
+    void testGetDynamicArrayWithNull() {
+        Object[] result = StringUtils.getDynamicArray(null);
+        assertNull(result);
+    }
+
+    @Test
+    void testRevlistWithNonEmptyList() {
+        List<Integer> original = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+        List<Integer> expected = new ArrayList<>(Arrays.asList(5, 4, 3, 2, 1));
+        StringUtils.revlist(original);
+        assertEquals(expected, original);
+    }
+
+    @Test
+    void testRevlistWithEmptyList() {
+        List<Object> original = new ArrayList<>();
+        StringUtils.revlist(original);
+        assertTrue(original.isEmpty());
+    }
+
+    @Test
+    void testRevlistWithNull() {
+        List<Object> original = null;
+        // Since the method does not throw an exception for null input, it should not cause an error.
+        assertDoesNotThrow(() -> StringUtils.revlist(original));
+    }
+
+    @Test
+    void testRevlistWithSingleElement() {
+        List<String> original = new ArrayList<>(Collections.singletonList("single"));
+        List<String> expected = new ArrayList<>(Collections.singletonList("single"));
+        StringUtils.revlist(original);
+        assertEquals(expected, original);
     }
 }
