@@ -150,7 +150,7 @@ public class StringUtils {
      */
     public static Color getColorFrom(final long data, final boolean hasAlpha) {
         // Extract the alpha component. If not using alpha bits, default to 255.
-        long alpha = 255;
+        long alpha = 0xFF;
         if (hasAlpha) {
             alpha = (data >> 24) & 0xFF;
         }
@@ -245,11 +245,12 @@ public class StringUtils {
 
     /**
      * Attempt to retrieve color info for the specified entries
+     * <p>Returns {@link Color#WHITE} if start color is invalid (Type-dependent)
      *
-     * @param startColorObj The Starting Color Object
+     * @param startColorObj The Starting Color Object (Default: {@link Color#WHITE})
      * @return the processed output
      */
-    public static Color findColor(Object startColorObj) {
+    public static Color findColor(final Object startColorObj) {
         return findColor(startColorObj, null).getFirst();
     }
 
