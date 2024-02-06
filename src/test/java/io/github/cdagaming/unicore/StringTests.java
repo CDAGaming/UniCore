@@ -43,14 +43,14 @@ class StringTests {
     public void testGetColorFromRGB() {
         // Test with valid RGB values
         Color color = StringUtils.getColorFrom(255, 0, 0); // Red
-        assertEquals(new Color(255, 0, 0), color);
+        assertEquals(Color.red, color);
 
         // Test with edge case RGB values (boundaries)
         color = StringUtils.getColorFrom(0, 0, 0); // Black
-        assertEquals(new Color(0, 0, 0), color);
+        assertEquals(Color.black, color);
 
         color = StringUtils.getColorFrom(255, 255, 255); // White
-        assertEquals(new Color(255, 255, 255), color);
+        assertEquals(Color.white, color);
     }
 
     @Test
@@ -64,7 +64,7 @@ class StringTests {
     public void testGetColorFromInt() {
         // Test with a valid integer
         Color color = StringUtils.getColorFrom(0xFF0000); // Red
-        assertEquals(new Color(255, 0, 0), color);
+        assertEquals(Color.red, color);
 
         color = StringUtils.getColorFrom(0x00FFFFFF, true); // Transparent White
         assertEquals(new Color(255, 255, 255, 0), color);
@@ -74,7 +74,7 @@ class StringTests {
     public void testGetColorFromHex() {
         // Test with a valid hex color (without alpha)
         Color color = StringUtils.getColorFrom("#FF0000"); // Red
-        assertEquals(new Color(255, 0, 0), color);
+        assertEquals(Color.red, color);
 
         // Test with a valid hex color (with alpha)
         color = StringUtils.getColorFrom("#80FF0000"); // Red with 50% opacity
@@ -89,8 +89,8 @@ class StringTests {
     public void testFindColor() {
         // Test with valid start and end colors
         Pair<Color, Color> colors = StringUtils.findColor("#FF0000", "#00FF00"); // Red to Green
-        assertEquals(new Color(255, 0, 0), colors.getFirst());
-        assertEquals(new Color(0, 255, 0), colors.getSecond());
+        assertEquals(Color.red, colors.getFirst());
+        assertEquals(Color.green, colors.getSecond());
 
         // Test with invalid start color and valid end color
         colors = StringUtils.findColor("invalid", "#00FF00"); // Should default to white to Green
@@ -99,8 +99,8 @@ class StringTests {
 
         // Test with valid start color and invalid end color, start color should be used for both
         colors = StringUtils.findColor("#FF0000", "invalid"); // Red to Red
-        assertEquals(new Color(255, 0, 0), colors.getFirst());
-        assertEquals(new Color(255, 0, 0), colors.getSecond());
+        assertEquals(Color.red, colors.getFirst());
+        assertEquals(Color.red, colors.getSecond());
     }
 
     @Test
@@ -135,8 +135,8 @@ class StringTests {
 
     @Test
     public void testFindColorWithColorObjects() {
-        Color startColor = Color.RED;
-        Color endColor = Color.BLUE;
+        Color startColor = Color.red;
+        Color endColor = Color.blue;
 
         Pair<Color, Color> result = StringUtils.findColor(startColor, endColor);
 
@@ -146,7 +146,7 @@ class StringTests {
 
     @Test
     public void testFindColorWithOneColorObject() {
-        Color startColor = Color.RED;
+        Color startColor = Color.red;
 
         Color result = StringUtils.findColor(startColor);
 
@@ -160,13 +160,13 @@ class StringTests {
 
         Pair<Color, Color> result = StringUtils.findColor(startColorCode, endColorCode);
 
-        assertEquals(Color.RED, result.getFirst());
-        assertEquals(Color.BLUE, result.getSecond());
+        assertEquals(Color.red, result.getFirst());
+        assertEquals(Color.blue, result.getSecond());
     }
 
     @Test
     public void testFindColorWithNullEndColor() {
-        Color startColor = Color.RED;
+        Color startColor = Color.red;
 
         Pair<Color, Color> result = StringUtils.findColor(startColor, null);
 

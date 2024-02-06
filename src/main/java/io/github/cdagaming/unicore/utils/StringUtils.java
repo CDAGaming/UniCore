@@ -205,6 +205,7 @@ public class StringUtils {
 
     /**
      * Offset the specified {@link Color} by the specified factor
+     * <p>The Alpha channel is NOT effected by this change
      *
      * @param color  the {@link Color} to offset
      * @param factor the offset factor
