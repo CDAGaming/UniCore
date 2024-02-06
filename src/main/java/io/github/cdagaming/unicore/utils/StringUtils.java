@@ -51,18 +51,9 @@ import java.util.stream.Collectors;
  */
 public class StringUtils {
     /**
-     * The unknown identifier for Base64 data
-     * <p>Used to implicitly specify a Sting is meant to be Base64
-     */
-    public static final String UNKNOWN_BASE64_ID = "data:image/unknown;base64";
-    /**
      * The Character to be interpreted as the start to a Formatting Character
      */
     public static final char COLOR_CHAR = '§';
-    /**
-     * The character set representing data that is too large to display
-     */
-    public static final String TOO_LARGE = "<...>";
     /**
      * The character set representing a Tab in the form of four spaces
      */

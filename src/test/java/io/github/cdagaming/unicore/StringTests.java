@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -333,9 +334,8 @@ class StringTests {
 
     @Test
     void testRevlistWithNull() {
-        List<Object> original = null;
         // Since the method does not throw an exception for null input, it should not cause an error.
-        assertDoesNotThrow(() -> StringUtils.revlist(original));
+        assertDoesNotThrow(() -> StringUtils.revlist(null));
     }
 
     @Test
@@ -344,5 +344,50 @@ class StringTests {
         List<String> expected = new ArrayList<>(Collections.singletonList("single"));
         StringUtils.revlist(original);
         assertEquals(expected, original);
+    }
+
+    @Test
+    void testGetMatchesWithValidRegexAndString() {
+        String regexValue = "\\d+"; // Matches one or more digits
+        String original = "abc123def456";
+        Pair<String, List<String>> result = StringUtils.getMatches(regexValue, original);
+        assertEquals(original, result.getFirst());
+        assertArrayEquals(new String[]{"123", "456"}, result.getSecond().toArray(new String[0]));
+    }
+
+    @Test
+    void testGetMatchesWithNoMatch() {
+        String regexValue = "xyz"; // No match expected
+        String original = "abc123def456";
+        Pair<String, List<String>> result = StringUtils.getMatches(regexValue, original);
+        assertEquals(original, result.getFirst());
+        assertTrue(result.getSecond().isEmpty());
+    }
+
+    @Test
+    void testGetMatchesWithNullInput() {
+        String regexValue = "\\d+";
+        Pair<String, List<String>> result = StringUtils.getMatches(regexValue, (Object)null);
+        assertEquals("", result.getFirst());
+        assertTrue(result.getSecond().isEmpty());
+    }
+
+    @Test
+    void testGetMatchesWithFlags() {
+        String regexValue = "ABC"; // Case-insensitive match due to flag
+        String original = "abcABC";
+        int flags = Pattern.CASE_INSENSITIVE;
+        Pair<String, List<String>> result = StringUtils.getMatches(regexValue, original, flags);
+        assertEquals(original, result.getFirst());
+        assertArrayEquals(new String[]{"abc", "ABC"}, result.getSecond().toArray(new String[0]));
+    }
+
+    @Test
+    void testGetMatchesWithObjectInput() {
+        String regexValue = "\\d+";
+        Object original = "123abc456";
+        Pair<String, List<String>> result = StringUtils.getMatches(regexValue, original);
+        assertEquals(original.toString(), result.getFirst());
+        assertArrayEquals(new String[]{"123", "456"}, result.getSecond().toArray(new String[0]));
     }
 }
