@@ -65,11 +65,12 @@ dependencies {
     compileOnly("com.github.spotbugs:spotbugs-annotations:4.8.3")
 
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.10'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.12'
     implementation group: 'net.lenni0451', name: 'Reflect', version: "${reflect_version}"
     implementation group: 'io.github.classgraph', name: 'classgraph', version: "${classgraph_version}"
 
-    testImplementation "org.junit.jupiter:junit-jupiter:5.10.1"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+    testRuntimeOnly "org.slf4j:slf4j-simple:2.0.12"
 }
 
 test {
@@ -129,8 +130,8 @@ publishing {
             from components.java
 
             pom {
-                name = archivesBaseName
-                artifactId = archivesBaseName
+                name = "${archives_base_name}"
+                artifactId = "${archives_base_name}"
                 packaging = 'jar'
                 description = project.description
                 url = 'https://github.com/CDAGaming/UniCore'
