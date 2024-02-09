@@ -30,10 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import java.awt.Color;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -429,5 +426,104 @@ class StringTests {
     void testRemoveMatchesWithNullMatchData() {
         String result = StringUtils.removeMatches(null, null);
         assertNull(result);
+    }
+
+    @Test
+    void testMinifyString() {
+        String result = StringUtils.minifyString("Hello world", 5);
+        assertEquals("Hello", result);
+    }
+
+    @Test
+    void testMinifyStringWithNegativeLength() {
+        String result = StringUtils.minifyString("Hello world", -1);
+        assertEquals("Hello world", result);
+    }
+
+    @Test
+    void testMinifyStringWithLengthExceedingSourceLength() {
+        String result = StringUtils.minifyString("Hi", 10);
+        assertEquals("Hi", result);
+    }
+
+    @Test
+    void testMinifyEmptyString() {
+        String result = StringUtils.minifyString("", 5);
+        assertEquals("", result);
+    }
+
+    @Test
+    void testIsNullOrEmptyWithEmptyString() {
+        assertTrue(StringUtils.isNullOrEmpty("", false));
+    }
+
+    @Test
+    void testIsNullOrEmptyWithWhitespaceAndAllowWhitespace() {
+        assertFalse(StringUtils.isNullOrEmpty("   ", true));
+    }
+
+    @Test
+    void testIsNullOrEmptyWithWhitespaceAndDisallowWhitespace() {
+        assertTrue(StringUtils.isNullOrEmpty("   ", false));
+    }
+
+    @Test
+    void testIsNullOrEmptyWithNull() {
+        assertTrue(StringUtils.isNullOrEmpty(null));
+    }
+
+    @Test
+    void testIsValidBooleanWithStringTrue() {
+        assertTrue(StringUtils.isValidBoolean("true"));
+    }
+
+    @Test
+    void testIsValidBooleanWithStringFalse() {
+        assertTrue(StringUtils.isValidBoolean("false"));
+    }
+
+    @Test
+    void testIsValidBooleanWithInvalidString() {
+        assertFalse(StringUtils.isValidBoolean("not a boolean"));
+    }
+
+    @Test
+    void testGetValidIntegerWithValidNumber() {
+        Pair<Boolean, Integer> result = StringUtils.getValidInteger("123");
+        assertTrue(result.getFirst());
+        assertEquals(123, result.getSecond().intValue());
+    }
+
+    @Test
+    void testGetValidIntegerWithInvalidNumber() {
+        Pair<Boolean, Integer> result = StringUtils.getValidInteger("abc");
+        assertFalse(result.getFirst());
+    }
+
+    @Test
+    void testGetValidLongWithValidNumber() {
+        Pair<Boolean, Long> result = StringUtils.getValidLong("1234567890");
+        assertTrue(result.getFirst());
+        assertEquals(1234567890L, result.getSecond().longValue());
+    }
+
+    @Test
+    void testGetValidLongWithInvalidNumber() {
+        Pair<Boolean, Long> result = StringUtils.getValidLong("abc");
+        assertFalse(result.getFirst());
+    }
+
+    @Test
+    void testGetValidBooleanWithTrue() {
+        Pair<Boolean, Boolean> result = StringUtils.getValidBoolean("true");
+        assertTrue(result.getFirst());
+        assertTrue(result.getSecond());
+    }
+
+    @Test
+    void testGetValidBooleanWithFalse() {
+        Pair<Boolean, Boolean> result = StringUtils.getValidBoolean("false");
+        assertTrue(result.getFirst());
+        assertFalse(result.getSecond());
     }
 }
