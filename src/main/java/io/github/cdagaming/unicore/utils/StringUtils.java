@@ -461,22 +461,23 @@ public class StringUtils {
     }
 
     /**
-     * Remove an Amount of Matches from the specified args
+     * Replace an Amount of Matches from the specified args
      *
-     * @param regexValue The Regex Value to test against
-     * @param original   The original String to get matches from
-     * @param flags      The bit mask for Pattern compilation, see {@link Pattern#compile(String, int)}
-     * @param maxMatches The maximum amount of matches to remove (Set to -1 to Remove All)
+     * @param regexValue  The Regex Value to test against
+     * @param original    The original String to get matches from
+     * @param replaceWith The value to replace the target with
+     * @param flags       The bit mask for Pattern compilation, see {@link Pattern#compile(String, int)}
+     * @param maxMatches  The maximum amount of matches to remove (Set to -1 to Remove All)
      * @return The original String from Match Data with the matches up to maxMatches removed
      */
-    public static String removeMatches(final String regexValue, final String original, final int flags, final int maxMatches) {
+    public static String replaceMatches(final String regexValue, final String original, final String replaceWith, final int flags, final int maxMatches) {
         final Matcher matcher = getMatcher(regexValue, original, flags);
         final StringBuffer finalString = new StringBuffer();
 
         if (matcher != null) {
             int timesLeft = maxMatches;
             while (matcher.find() && (timesLeft > 0 || timesLeft == -1)) {
-                matcher.appendReplacement(finalString, "");
+                matcher.appendReplacement(finalString, replaceWith);
                 if (timesLeft > 0) {
                     timesLeft--;
                 }
@@ -487,6 +488,44 @@ public class StringUtils {
         }
 
         return finalString.toString();
+    }
+
+    /**
+     * Replace an Amount of Matches from the specified args
+     *
+     * @param regexValue  The Regex Value to test against
+     * @param original    The original String to get matches from
+     * @param replaceWith The value to replace the target with
+     * @param flags       The bit mask for Pattern compilation, see {@link Pattern#compile(String, int)}
+     * @return The original String from Match Data with the matches up to maxMatches removed
+     */
+    public static String replaceMatches(final String regexValue, final String original, final String replaceWith, final int flags) {
+        return replaceMatches(regexValue, original, replaceWith, flags, -1);
+    }
+
+    /**
+     * Replace an Amount of Matches from the specified args
+     *
+     * @param regexValue  The Regex Value to test against
+     * @param original    The original String to get matches from
+     * @param replaceWith The value to replace the target with
+     * @return The original String from Match Data with the matches up to maxMatches removed
+     */
+    public static String replaceMatches(final String regexValue, final String original, final String replaceWith) {
+        return replaceMatches(regexValue, original, replaceWith, 0);
+    }
+
+    /**
+     * Remove an Amount of Matches from the specified args
+     *
+     * @param regexValue The Regex Value to test against
+     * @param original   The original String to get matches from
+     * @param flags      The bit mask for Pattern compilation, see {@link Pattern#compile(String, int)}
+     * @param maxMatches The maximum amount of matches to remove (Set to -1 to Remove All)
+     * @return The original String from Match Data with the matches up to maxMatches removed
+     */
+    public static String removeMatches(final String regexValue, final String original, final int flags, final int maxMatches) {
+        return replaceMatches(regexValue, original, "", flags, maxMatches);
     }
 
     /**
@@ -540,8 +579,7 @@ public class StringUtils {
             if (!matchCase) {
                 flags |= Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE;
             }
-            return Pattern.compile(patternString, flags).matcher(source)
-                    .replaceAll(Matcher.quoteReplacement(replaceWith));
+            return replaceMatches(patternString, source, replaceWith, flags, -1);
         } else {
             return "";
         }
