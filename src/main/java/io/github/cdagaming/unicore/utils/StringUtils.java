@@ -584,7 +584,7 @@ public class StringUtils {
      */
     public static String minifyString(final String source, final int length) {
         if (!isNullOrEmpty(source)) {
-            return length >= 0 ? source.substring(0, length) : source;
+            return MathUtils.isWithinValue(length, 0, source.length(), true, true) ? source.substring(0, length) : source;
         } else {
             return "";
         }
