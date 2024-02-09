@@ -403,26 +403,26 @@ public class StringUtils {
     }
 
     /**
-     * Retrieve Matching Values from an input that matches the defined regex
+     * Retrieve Match info from an input that matches the defined regex
      *
      * @param regexValue The Regex Value to test against
-     * @param original   The original Object to get matches from
+     * @param original   The original String to get matches from
      * @param flags      The bit mask for Pattern compilation, see {@link Pattern#compile(String, int)}
-     * @return A Pair with the Format of originalString:listOfMatches
+     * @return the processed {@link Matcher} instance
      */
-    public static Pair<String, List<String>> getMatches(final String regexValue, final Object original, final int flags) {
-        return original != null ? getMatches(regexValue, original.toString(), flags) : new Pair<>("", newArrayList());
+    public static Matcher getMatcher(final String regexValue, final String original, final int flags) {
+        return !isNullOrEmpty(original) ? Pattern.compile(regexValue, flags).matcher(original) : null;
     }
 
     /**
-     * Retrieve Matching Values from an input that matches the defined regex
+     * Retrieve Match info from an input that matches the defined regex
      *
      * @param regexValue The Regex Value to test against
-     * @param original   The original Object to get matches from
-     * @return A Pair with the Format of originalString:listOfMatches
+     * @param original   The original String to get matches from
+     * @return the processed {@link Matcher} instance
      */
-    public static Pair<String, List<String>> getMatches(final String regexValue, final Object original) {
-        return getMatches(regexValue, original, 0);
+    public static Matcher getMatcher(final String regexValue, final String original) {
+        return getMatcher(regexValue, original, 0);
     }
 
     /**
@@ -431,80 +431,85 @@ public class StringUtils {
      * @param regexValue The Regex Value to test against
      * @param original   The original String to get matches from
      * @param flags      The bit mask for Pattern compilation, see {@link Pattern#compile(String, int)}
-     * @return A Pair with the Format of originalString:listOfMatches
+     * @return the list of found matches
      */
-    public static Pair<String, List<String>> getMatches(final String regexValue, final String original, final int flags) {
+    public static List<String> getMatches(final String regexValue, final String original, final int flags) {
         final List<String> matches = newArrayList();
 
         if (!isNullOrEmpty(original)) {
-            final Pattern pattern = Pattern.compile(regexValue, flags);
-            final Matcher m = pattern.matcher(original);
+            final Matcher m = getMatcher(regexValue, original, flags);
 
-            while (m.find()) {
-                matches.add(m.group());
-            }
-        }
-
-        return new Pair<>(original, matches);
-    }
-
-    /**
-     * Retrieve Matching Values from an input that matches the defined regex
-     *
-     * @param regexValue The Regex Value to test against
-     * @param original   The original String to get matches from
-     * @return A Pair with the Format of originalString:listOfMatches
-     */
-    public static Pair<String, List<String>> getMatches(final String regexValue, final String original) {
-        return getMatches(regexValue, original, 0);
-    }
-
-    /**
-     * Remove an Amount of Matches from an inputted Match Set
-     *
-     * @param matchData       The Match Data to remove from with the form of originalString:listOfMatches
-     * @param parsedMatchData The Parsed Argument Data to match against, if available, to prevent Null Arguments
-     * @param maxMatches      The maximum amount of matches to remove (Set to -1 to Remove All)
-     * @return The original String from Match Data with the matches up to maxMatches removed
-     */
-    public static String removeMatches(final Pair<String, List<String>> matchData, final List<Pair<String, String>> parsedMatchData, final int maxMatches) {
-        String finalString = "";
-
-        if (matchData != null) {
-            finalString = matchData.getFirst();
-            final List<String> matchList = matchData.getSecond();
-
-            if (!matchList.isEmpty()) {
-                int foundMatches = 0;
-
-                for (String match : matchList) {
-                    final boolean isValidScan = foundMatches >= maxMatches;
-                    boolean alreadyRemoved = false;
-
-                    if (parsedMatchData != null && !parsedMatchData.isEmpty()) {
-                        // Scan through Parsed Argument Data if Possible
-                        for (Pair<String, String> parsedArgument : parsedMatchData) {
-                            // If found a matching argument to the match, and the parsed argument is null
-                            // Remove the match without counting it as a found match
-                            if (parsedArgument.getFirst().equalsIgnoreCase(match) && isNullOrEmpty(parsedArgument.getSecond())) {
-                                finalString = finalString.replaceFirst(match, "");
-                                alreadyRemoved = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (!alreadyRemoved) {
-                        if (isValidScan) {
-                            finalString = finalString.replaceFirst(match, "");
-                        }
-                        foundMatches++;
-                    }
+            if (m != null) {
+                while (m.find()) {
+                    matches.add(m.group());
                 }
             }
         }
 
-        return finalString;
+        return matches;
+    }
+
+    /**
+     * Retrieve Matching Values from an input that matches the defined regex
+     *
+     * @param regexValue The Regex Value to test against
+     * @param original   The original String to get matches from
+     * @return the list of found matches
+     */
+    public static List<String> getMatches(final String regexValue, final String original) {
+        return getMatches(regexValue, original, 0);
+    }
+
+    /**
+     * Remove an Amount of Matches from the specified args
+     *
+     * @param regexValue The Regex Value to test against
+     * @param original   The original String to get matches from
+     * @param flags      The bit mask for Pattern compilation, see {@link Pattern#compile(String, int)}
+     * @param maxMatches The maximum amount of matches to remove (Set to -1 to Remove All)
+     * @return The original String from Match Data with the matches up to maxMatches removed
+     */
+    public static String removeMatches(final String regexValue, final String original, final int flags, final int maxMatches) {
+        final Matcher matcher = getMatcher(regexValue, original, flags);
+        final StringBuffer finalString = new StringBuffer();
+
+        if (matcher != null) {
+            int timesLeft = maxMatches;
+            while (matcher.find() && (timesLeft > 0 || timesLeft == -1)) {
+                matcher.appendReplacement(finalString, "");
+                if (timesLeft > 0) {
+                    timesLeft--;
+                }
+            }
+            matcher.appendTail(finalString);
+        } else {
+            return original;
+        }
+
+        return finalString.toString();
+    }
+
+    /**
+     * Remove an Amount of Matches from the specified args
+     *
+     * @param regexValue The Regex Value to test against
+     * @param original   The original String to get matches from
+     * @param flags      The bit mask for Pattern compilation, see {@link Pattern#compile(String, int)}
+     * @return The original String from Match Data with the matches up to maxMatches removed
+     */
+    public static String removeMatches(final String regexValue, final String original, final int flags) {
+        return removeMatches(regexValue, original, flags, -1);
+    }
+
+    /**
+     * Remove an Amount of Matches from the specified args
+     *
+     * @param regexValue The Regex Value to test against
+     * @param original   The original String to get matches from
+     * @return The original String from Match Data with the matches up to maxMatches removed
+     */
+    public static String removeMatches(final String regexValue, final String original) {
+        return removeMatches(regexValue, original, 0);
     }
 
     /**

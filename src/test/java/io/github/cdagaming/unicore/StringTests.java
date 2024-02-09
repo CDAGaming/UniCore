@@ -350,26 +350,23 @@ class StringTests {
     void testGetMatchesWithValidRegexAndString() {
         String regexValue = "\\d+"; // Matches one or more digits
         String original = "abc123def456";
-        Pair<String, List<String>> result = StringUtils.getMatches(regexValue, original);
-        assertEquals(original, result.getFirst());
-        assertArrayEquals(new String[]{"123", "456"}, result.getSecond().toArray(new String[0]));
+        List<String> result = StringUtils.getMatches(regexValue, original);
+        assertArrayEquals(new String[]{"123", "456"}, result.toArray(new String[0]));
     }
 
     @Test
     void testGetMatchesWithNoMatch() {
         String regexValue = "xyz"; // No match expected
         String original = "abc123def456";
-        Pair<String, List<String>> result = StringUtils.getMatches(regexValue, original);
-        assertEquals(original, result.getFirst());
-        assertTrue(result.getSecond().isEmpty());
+        List<String> result = StringUtils.getMatches(regexValue, original);
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void testGetMatchesWithNullInput() {
+    void testGetMatchesWithEmptyInput() {
         String regexValue = "\\d+";
-        Pair<String, List<String>> result = StringUtils.getMatches(regexValue, (Object)null);
-        assertEquals("", result.getFirst());
-        assertTrue(result.getSecond().isEmpty());
+        List<String> result = StringUtils.getMatches(regexValue, "");
+        assertTrue(result.isEmpty());
     }
 
     @Test
@@ -377,17 +374,60 @@ class StringTests {
         String regexValue = "ABC"; // Case-insensitive match due to flag
         String original = "abcABC";
         int flags = Pattern.CASE_INSENSITIVE;
-        Pair<String, List<String>> result = StringUtils.getMatches(regexValue, original, flags);
-        assertEquals(original, result.getFirst());
-        assertArrayEquals(new String[]{"abc", "ABC"}, result.getSecond().toArray(new String[0]));
+        List<String> result = StringUtils.getMatches(regexValue, original, flags);
+        assertArrayEquals(new String[]{"abc", "ABC"}, result.toArray(new String[0]));
     }
 
     @Test
-    void testGetMatchesWithObjectInput() {
-        String regexValue = "\\d+";
-        Object original = "123abc456";
-        Pair<String, List<String>> result = StringUtils.getMatches(regexValue, original);
-        assertEquals(original.toString(), result.getFirst());
-        assertArrayEquals(new String[]{"123", "456"}, result.getSecond().toArray(new String[0]));
+    void testRemoveSpecificNumberOfMatches() {
+        String regexValue = "is|st"; // Match "is" and "st"
+        String original = "This is a test string";
+        String result = StringUtils.removeMatches(regexValue, original, 0, 2);
+        assertEquals("Th  a test string", result);
+    }
+
+    @Test
+    void testRemoveAllMatches() {
+        String regexValue = "\\bmatch\\b"; // Match "match"
+        String original = "Remove these matches: match match match";
+        String result = StringUtils.removeMatches(regexValue, original);
+        assertEquals("Remove these matches:   ", result);
+    }
+
+    @Test
+    void testRemoveMatchesWithNoMatchInData() {
+        String regexValue = "\\d"; // Dummy Value
+        String original = "No matches here";
+        String result = StringUtils.removeMatches(regexValue, original);
+        assertEquals("No matches here", result);
+    }
+
+    @Test
+    void testRemoveMatchesWithRegexAndFlags() {
+        String original = "RegexTest123";
+        int flags = Pattern.CASE_INSENSITIVE;
+        String result = StringUtils.removeMatches("\\d", original, flags, 2); // Removing two digits
+        assertEquals("RegexTest3", result);
+    }
+
+    @Test
+    void testRemoveMatchesWithRegexRemoveAll() {
+        String original = "Remove123All456Digits789";
+        String result = StringUtils.removeMatches("\\d+", original); // Remove all digits
+        assertEquals("RemoveAllDigits", result);
+    }
+
+    @Test
+    void testRemoveMatchesWithInvalidMaxMatches() {
+        String regexValue = ""; // Match "is" and "st"
+        String original = "This is a test string";
+        String result = StringUtils.removeMatches(regexValue, original, 0, -2); // Invalid, so no matches should be removed
+        assertEquals("This is a test string", result);
+    }
+
+    @Test
+    void testRemoveMatchesWithNullMatchData() {
+        String result = StringUtils.removeMatches(null, null);
+        assertNull(result);
     }
 }
