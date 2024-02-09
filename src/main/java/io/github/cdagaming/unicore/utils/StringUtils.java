@@ -648,7 +648,7 @@ public class StringUtils {
      * Determine whether an inputted Object classifies as a valid Integer
      *
      * @param entry The Object to evaluate
-     * @return A Pair with the format of isValid:parsedIntegerIfTrue
+     * @return A Pair with the format of canParse:parsedIntegerIfTrue
      */
     public static Pair<Boolean, Integer> getValidInteger(final Object entry) {
         return entry != null ? getValidInteger(entry.toString()) : new Pair<>(false, 0);
@@ -658,7 +658,7 @@ public class StringUtils {
      * Determine whether an inputted String classifies as a valid Integer
      *
      * @param entry The String to evaluate
-     * @return A Pair with the format of isValid:parsedIntegerIfTrue
+     * @return A Pair with the format of canParse:parsedIntegerIfTrue
      */
     public static Pair<Boolean, Integer> getValidInteger(final String entry) {
         final Pair<Boolean, Integer> finalSet = new Pair<>();
@@ -681,7 +681,7 @@ public class StringUtils {
      * Determine whether an inputted Object classifies as a valid Long
      *
      * @param entry The Object to evaluate
-     * @return A Pair with the format of isValid:parsedLongIfTrue
+     * @return A Pair with the format of canParse:parsedLongIfTrue
      */
     public static Pair<Boolean, Long> getValidLong(final Object entry) {
         return entry != null ? getValidLong(entry.toString()) : new Pair<>(false, 0L);
@@ -691,7 +691,7 @@ public class StringUtils {
      * Determine whether an inputted String classifies as a valid Long
      *
      * @param entry The String to evaluate
-     * @return A Pair with the format of isValid:parsedLongIfTrue
+     * @return A Pair with the format of canParse:parsedLongIfTrue
      */
     public static Pair<Boolean, Long> getValidLong(final String entry) {
         final Pair<Boolean, Long> finalSet = new Pair<>();
@@ -714,7 +714,7 @@ public class StringUtils {
      * Determine whether an inputted Object classifies as a valid Boolean
      *
      * @param entry The Object to evaluate
-     * @return A Pair with the format of isValid:parsedBoolIfTrue
+     * @return A Pair with the format of canParse:parsedBoolIfTrue
      */
     public static Pair<Boolean, Boolean> getValidBoolean(final Object entry) {
         return entry != null ? getValidBoolean(entry.toString()) : new Pair<>(false, false);
@@ -724,7 +724,7 @@ public class StringUtils {
      * Determine whether an inputted String classifies as a valid Boolean
      *
      * @param entry The String to evaluate
-     * @return A Pair with the format of isValid:parsedBoolIfTrue
+     * @return A Pair with the format of canParse:parsedBoolIfTrue
      */
     public static Pair<Boolean, Boolean> getValidBoolean(final String entry) {
         final Pair<Boolean, Boolean> finalSet = new Pair<>();
