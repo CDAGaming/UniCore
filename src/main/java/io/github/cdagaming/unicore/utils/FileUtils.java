@@ -737,7 +737,7 @@ public class FileUtils {
         for (Map.Entry<String, ClassInfo> classInfo : getClassMap().entrySet()) {
             if (classInfo != null) {
                 final String classPath = classInfo.getKey();
-                boolean hasMatch = false;
+                boolean hasMatch = hasNoPaths;
                 // Attempt to Add Classes Matching any of the Source Packages
                 if (!hasNoPaths) {
                     for (String path : paths) {
