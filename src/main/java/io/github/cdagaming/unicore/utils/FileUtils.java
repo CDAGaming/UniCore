@@ -489,10 +489,9 @@ public class FileUtils {
      */
     public static Map<String, ClassInfo> getClassNamesMatchingSuperType(final List<Class<?>> searchList, final String... sourcePackages) {
         final Map<String, ClassInfo> matchingClasses = StringUtils.newHashMap();
-        final List<String> sourceData = StringUtils.newArrayList(sourcePackages);
 
         Pair<Boolean, Map<String, ClassInfo>> subClassData = new Pair<>(false, StringUtils.newHashMap());
-        for (Map.Entry<String, ClassInfo> classInfo : getClasses(sourceData).entrySet()) {
+        for (Map.Entry<String, ClassInfo> classInfo : getClasses(sourcePackages).entrySet()) {
             for (Class<?> searchClass : searchList) {
                 subClassData = isSubclassOf(classInfo.getValue(), searchClass, subClassData.getSecond());
 
@@ -725,23 +724,28 @@ public class FileUtils {
      * @param paths A nullable list of paths to be interpreted
      * @return the resulting list
      */
-    public static Map<String, ClassInfo> getClasses(final List<String> paths) {
+    public static Map<String, ClassInfo> getClasses(final String... paths) {
         final Map<String, ClassInfo> results = StringUtils.newHashMap();
         final Map<String, Set<String>> unmappedNames = StringUtils.newHashMap();
-        for (String path : paths) {
-            unmappedNames.put(path, MappingUtils.getUnmappedClassesMatching(path));
+        final boolean hasNoPaths = paths == null || paths.length == 0;
+        if (!hasNoPaths) {
+            for (String path : paths) {
+                unmappedNames.put(path, MappingUtils.getUnmappedClassesMatching(path));
+            }
         }
 
         for (Map.Entry<String, ClassInfo> classInfo : getClassMap().entrySet()) {
             if (classInfo != null) {
                 final String classPath = classInfo.getKey();
-                boolean hasMatch = paths.isEmpty();
+                boolean hasMatch = false;
                 // Attempt to Add Classes Matching any of the Source Packages
-                for (String path : paths) {
-                    final Set<String> unmapped = unmappedNames.get(path);
-                    if (classPath.startsWith(path) || unmapped.contains(classPath)) {
-                        hasMatch = true;
-                        break;
+                if (!hasNoPaths) {
+                    for (String path : paths) {
+                        final Set<String> unmapped = unmappedNames.get(path);
+                        if (classPath.startsWith(path) || unmapped.contains(classPath)) {
+                            hasMatch = true;
+                            break;
+                        }
                     }
                 }
 

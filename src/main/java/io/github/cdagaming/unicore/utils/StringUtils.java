@@ -1255,7 +1255,6 @@ public class StringUtils {
         char charIndex = ' ';
         int timesLeft = timesToCheck;
         for (int index = 0; index < str.length(); index++) {
-
             // If previous character is space and current
             // character is not space then it shows that
             // current letter is the starting of the word
@@ -1310,30 +1309,6 @@ public class StringUtils {
      */
     public static List<String> splitTextByNewLine(final String original) {
         return splitTextByNewLine(original, false);
-    }
-
-    /**
-     * Joins a set of strings together by the specified separator
-     *
-     * @param separator The string the list should be linked together by
-     * @param input     The list of data to interpret
-     * @return The resulting string
-     */
-    public static String join(final String separator, final List<String> input) {
-        if (input == null || input.isEmpty()) return "";
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < input.size(); i++) {
-            sb.append(input.get(i));
-
-            // if not the last item
-            if (i < input.size() - 1) {
-                sb.append(separator);
-            }
-        }
-
-        return sb.toString();
-
     }
 
     /**
