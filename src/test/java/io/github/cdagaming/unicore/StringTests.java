@@ -25,6 +25,7 @@
 package io.github.cdagaming.unicore;
 
 import io.github.cdagaming.unicore.impl.Pair;
+import io.github.cdagaming.unicore.impl.Tuple;
 import io.github.cdagaming.unicore.utils.StringUtils;
 import org.junit.jupiter.api.Test;
 
@@ -525,5 +526,97 @@ class StringTests {
         Pair<Boolean, Boolean> result = StringUtils.getValidBoolean("false");
         assertTrue(result.getFirst());
         assertFalse(result.getSecond());
+    }
+
+    @Test
+    void testFormatAddressWithIPAndPort() {
+        assertEquals("192.168.1.1", StringUtils.formatAddress("192.168.1.1:8080", false));
+        assertEquals("8080", StringUtils.formatAddress("192.168.1.1:8080", true));
+    }
+
+    @Test
+    void testFormatAddressWithOnlyIP() {
+        assertEquals("192.168.1.1", StringUtils.formatAddress("192.168.1.1", false));
+        assertEquals("25565", StringUtils.formatAddress("192.168.1.1", true));
+    }
+
+    @Test
+    void testFormatAddressWithEmptyString() {
+        assertEquals("127.0.0.1", StringUtils.formatAddress("", false));
+        assertEquals("25565", StringUtils.formatAddress("", true));
+    }
+
+    @Test
+    void testContainsWhitespace() {
+        assertTrue(StringUtils.containsWhitespace("Hello World"));
+        assertFalse(StringUtils.containsWhitespace("HelloWorld"));
+    }
+
+    @Test
+    void testContainsAlphaNumeric() {
+        assertTrue(StringUtils.containsAlphaNumeric("HelloWorld2"));
+        assertFalse(StringUtils.containsAlphaNumeric("!@#$%^&*()"));
+    }
+
+    @Test
+    void testFormatToCamel() {
+        assertEquals("helloWorld", StringUtils.formatToCamel("Hello world"));
+        assertEquals("helloWorldAgain", StringUtils.formatToCamel("Hello World_Again"));
+    }
+
+    @Test
+    void testFormatToCamelWithEmptyString() {
+        assertEquals("", StringUtils.formatToCamel(""));
+    }
+
+    @Test
+    void testFormatAsIconWithWhitespaceReplacement() {
+        assertEquals("hello_world", StringUtils.formatAsIcon("Hello World", "_"));
+        assertEquals("hello-world", StringUtils.formatAsIcon("Hello World", "-"));
+    }
+
+    @Test
+    void testFormatAsIconWithoutWhitespaceReplacement() {
+        assertEquals("helloworld", StringUtils.formatAsIcon("Hello World"));
+    }
+
+    @Test
+    void testFormatAsIconWithSpecialCharacters() {
+        assertEquals("icon_key_", StringUtils.formatAsIcon("Icon!Key@", "_"));
+    }
+
+    @Test
+    void testIsBase64WithValidBase64Image() {
+        String base64Image = "data:image/png;base64,iVBORw0KGgo=";
+        Tuple<Boolean, String, String> result = StringUtils.isBase64(base64Image);
+        assertTrue(result.getFirst());
+        assertEquals("data:image/png;base64", result.getSecond());
+        assertEquals("iVBORw0KGgo=", result.getThird());
+    }
+
+    @Test
+    void testIsBase64WithEmptyString() {
+        Tuple<Boolean, String, String> result = StringUtils.isBase64("");
+        assertFalse(result.getFirst());
+    }
+
+    @Test
+    void testIsValidUuidWithFullUuid() {
+        assertTrue(StringUtils.isValidUuid("123e4567-e89b-12d3-a456-426614174000"));
+    }
+
+    @Test
+    void testIsValidUuidWithTrimmedUuid() {
+        assertTrue(StringUtils.isValidUuid("123e4567e89b12d3a456426614174000"));
+    }
+
+    @Test
+    void testIsValidUuidWithInvalidUuid() {
+        assertFalse(StringUtils.isValidUuid("INVALID_UUID"));
+    }
+
+    @Test
+    void testIsValidUuidWithEmptyString() {
+        assertFalse(StringUtils.isValidUuid(""));
     }
 }
