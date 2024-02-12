@@ -48,10 +48,9 @@ public class MathUtils {
         // Sanity checks
         if (check_sanity) {
             if (min > max) {
+                final double temp = min;
                 min = max;
-            }
-            if (max < min) {
-                max = min;
+                max = temp;
             }
         }
         // Checking value within range based on contains_min and contains_max
