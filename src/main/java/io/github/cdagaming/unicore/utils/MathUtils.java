@@ -97,7 +97,7 @@ public class MathUtils {
     /**
      * Rounds a Double to the defined decimal place, if possible
      *
-     * @param value  the original value to round
+     * @param value  The original value to round
      * @param places The amount of places to round upon
      * @return The rounded Double value
      */

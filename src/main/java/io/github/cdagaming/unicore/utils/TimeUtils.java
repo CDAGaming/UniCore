@@ -217,23 +217,23 @@ public class TimeUtils {
     }
 
     /**
-     * Convert Date String to Epoch Timestamp in seconds.
+     * Convert Date String to Epoch Timestamp in milliseconds.
      *
      * @param dateString Date String in the given format and timezone.
      * @param format     Date format string.
      * @param timeZone   Timezone string.
-     * @return Epoch Timestamp in seconds.
+     * @return Epoch Timestamp in milliseconds.
      */
     public static long stringToEpoch(final String dateString, final String format, final String timeZone) {
         return toEpoch(toInstance(dateString, format, timeZone));
     }
 
     /**
-     * Convert Date String to Epoch Timestamp in seconds.
+     * Convert Date String to Epoch Timestamp in milliseconds.
      *
      * @param dateString Date String in the given format and timezone.
      * @param format     Date format string.
-     * @return Epoch Timestamp in seconds.
+     * @return Epoch Timestamp in milliseconds.
      */
     public static long stringToEpoch(final String dateString, final String format) {
         return stringToEpoch(dateString, format, null);
@@ -242,7 +242,7 @@ public class TimeUtils {
     /**
      * Retrieve a Time {@link Instant} from the specified epoch time
      *
-     * @param epochTime The epoch time to interpret
+     * @param epochTime The epoch time to interpret, in seconds
      * @return the converted {@link Instant} representing the epoch time
      */
     public static Instant fromEpoch(final long epochTime) {
@@ -253,7 +253,7 @@ public class TimeUtils {
      * Gets the number of milliseconds from the Java Epoch, derived from specified args
      *
      * @param data The timestamp data to interpret
-     * @return the number of seconds from the Java Epoch, from specified args
+     * @return the number of milliseconds from the Java Epoch, from specified args
      */
     public static long toEpoch(final Instant data) {
         return data != null ? data.toEpochMilli() : 0L;
@@ -262,7 +262,7 @@ public class TimeUtils {
     /**
      * Gets the number of milliseconds from the Java Epoch, derived from specified args
      *
-     * @return the number of seconds from the Java Epoch, from specified args
+     * @return the number of milliseconds from the Java Epoch, from specified args
      */
     public static long toEpoch() {
         return toEpoch(getCurrentTime());
