@@ -40,6 +40,32 @@ import java.util.concurrent.TimeUnit;
  */
 public class TimeUtils {
     /**
+     * The default timezone to use if otherwise unspecified
+     */
+    private static final String DEFAULT_ZONE = "UTC";
+
+    /**
+     * Create a {@link DateTimeFormatter} using the specified timezone and format.
+     *
+     * @param toFormat   Target format string.
+     * @param toTimeZone Target timezone string.
+     * @return the {@link DateTimeFormatter} in the target timezone and format.
+     */
+    public static DateTimeFormatter getFormatter(final String toFormat, final String toTimeZone) {
+        return DateTimeFormatter.ofPattern(toFormat).withZone(ZoneId.of(toTimeZone));
+    }
+
+    /**
+     * Create a {@link DateTimeFormatter} using the specified timezone and format.
+     *
+     * @param toFormat Target format string.
+     * @return the {@link DateTimeFormatter} in the target timezone and format.
+     */
+    public static DateTimeFormatter getFormatter(final String toFormat) {
+        return getFormatter(toFormat, DEFAULT_ZONE);
+    }
+
+    /**
      * Format a Date String using the specified timezone and format.
      *
      * @param date       The {@link Instant} info to interpret.
@@ -48,15 +74,8 @@ public class TimeUtils {
      * @return Date String in the target timezone and format.
      */
     public static String toString(final Instant date, final String toFormat, final String toTimeZone) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(toFormat);
-        if (date != null && !StringUtils.isNullOrEmpty(toTimeZone)) {
-            final ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(
-                    date, ZoneId.of("UTC")
-            ).withZoneSameInstant(ZoneId.of(toTimeZone));
-            return formatter.format(zonedDateTime);
-        } else {
-            return date != null ? formatter.format(date.atZone(ZoneOffset.UTC)) : "";
-        }
+        if (date == null) return "";
+        return getFormatter(toFormat, toTimeZone).format(date);
     }
 
     /**
@@ -67,7 +86,7 @@ public class TimeUtils {
      * @return Date String in the target timezone and format.
      */
     public static String toString(final Instant date, final String toFormat) {
-        return toString(date, toFormat, null);
+        return toString(date, toFormat, DEFAULT_ZONE);
     }
 
     /**
@@ -79,15 +98,7 @@ public class TimeUtils {
      * @return Date String in the target timezone and format.
      */
     public static Instant toInstance(final String dateString, final String fromFormat, final String fromTimeZone) {
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(fromFormat);
-            if (!StringUtils.isNullOrEmpty(fromTimeZone)) {
-                formatter = formatter.withZone(ZoneId.of(fromTimeZone));
-            }
-            return formatter.parse(dateString, Instant::from);
-        } catch (Exception ex) {
-            return null;
-        }
+        return getFormatter(fromFormat, fromTimeZone).parse(dateString, Instant::from);
     }
 
     /**
@@ -98,7 +109,7 @@ public class TimeUtils {
      * @return Date String in the target timezone and format.
      */
     public static Instant toInstance(final String dateString, final String fromFormat) {
-        return toInstance(dateString, fromFormat, null);
+        return toInstance(dateString, fromFormat, DEFAULT_ZONE);
     }
 
     /**
@@ -124,7 +135,7 @@ public class TimeUtils {
      * @return Date String in the target timezone and format.
      */
     public static String convertFormat(final String dateString, final String fromFormat, final String toFormat) {
-        return convertTime(dateString, fromFormat, null, toFormat, null);
+        return convertTime(dateString, fromFormat, DEFAULT_ZONE, toFormat, DEFAULT_ZONE);
     }
 
     /**
@@ -213,7 +224,7 @@ public class TimeUtils {
      */
     public static String epochToString(final long epochTime, final String format) {
         // Convert seconds to milliseconds
-        return epochToString(epochTime, format, null);
+        return epochToString(epochTime, format, DEFAULT_ZONE);
     }
 
     /**
@@ -236,7 +247,7 @@ public class TimeUtils {
      * @return Epoch Timestamp in milliseconds.
      */
     public static long stringToEpoch(final String dateString, final String format) {
-        return stringToEpoch(dateString, format, null);
+        return stringToEpoch(dateString, format, DEFAULT_ZONE);
     }
 
     /**
