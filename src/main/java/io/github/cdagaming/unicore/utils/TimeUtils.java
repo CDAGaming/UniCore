@@ -30,6 +30,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
+import java.time.temporal.TemporalQuery;
 import java.time.temporal.TemporalUnit;
 import java.util.concurrent.TimeUnit;
 
@@ -90,6 +91,33 @@ public class TimeUtils {
     }
 
     /**
+     * Format a Date String from one timezone and format into a valid {@link TemporalQuery} instance.
+     *
+     * @param dateString   Date String in the original timezone and format.
+     * @param fromFormat   Original format string.
+     * @param fromTimeZone Original timezone string.
+     * @param <T>          The query type to parse to, not null
+     * @param query        The query defining the type to parse to, not null
+     * @return Date String in the target timezone and format.
+     */
+    public static <T> T toInstance(final String dateString, final String fromFormat, final String fromTimeZone, final TemporalQuery<T> query) {
+        return getFormatter(fromFormat, fromTimeZone).parse(dateString, query);
+    }
+
+    /**
+     * Format a Date String from one timezone and format into a valid {@link TemporalQuery} instance.
+     *
+     * @param dateString Date String in the original timezone and format.
+     * @param fromFormat Original format string.
+     * @param <T>        The query type to parse to, not null
+     * @param query      The query defining the type to parse to, not null
+     * @return Date String in the target timezone and format.
+     */
+    public static <T> T toInstance(final String dateString, final String fromFormat, final TemporalQuery<T> query) {
+        return toInstance(dateString, fromFormat, DEFAULT_ZONE, query);
+    }
+
+    /**
      * Format a Date String from one timezone and format into a valid {@link Instant} instance.
      *
      * @param dateString   Date String in the original timezone and format.
@@ -97,8 +125,8 @@ public class TimeUtils {
      * @param fromTimeZone Original timezone string.
      * @return Date String in the target timezone and format.
      */
-    public static Instant toInstance(final String dateString, final String fromFormat, final String fromTimeZone) {
-        return getFormatter(fromFormat, fromTimeZone).parse(dateString, Instant::from);
+    public static Instant toInstant(final String dateString, final String fromFormat, final String fromTimeZone) {
+        return toInstance(dateString, fromFormat, fromTimeZone, Instant::from);
     }
 
     /**
@@ -108,8 +136,8 @@ public class TimeUtils {
      * @param fromFormat Original format string.
      * @return Date String in the target timezone and format.
      */
-    public static Instant toInstance(final String dateString, final String fromFormat) {
-        return toInstance(dateString, fromFormat, DEFAULT_ZONE);
+    public static Instant toInstant(final String dateString, final String fromFormat) {
+        return toInstant(dateString, fromFormat, DEFAULT_ZONE);
     }
 
     /**
@@ -123,7 +151,7 @@ public class TimeUtils {
      * @return Date String in the target timezone and format.
      */
     public static String convertTime(final String dateString, final String fromFormat, final String fromTimeZone, final String toFormat, final String toTimeZone) {
-        return toString(toInstance(dateString, fromFormat, fromTimeZone), toFormat, toTimeZone);
+        return toString(toInstant(dateString, fromFormat, fromTimeZone), toFormat, toTimeZone);
     }
 
     /**
@@ -162,7 +190,8 @@ public class TimeUtils {
      * @return The converted and readable 24-hour time string
      */
     public static Pair<Long, Instant> fromWorldTime(final long worldTime, final long tickOffset, final long ticksPerDay, final long ticksPerHour, final long ticksPerMinute) {
-        long days = worldTime / ticksPerDay;
+        final long days = worldTime / ticksPerDay;
+
         long dayTicks = worldTime % ticksPerDay;
         dayTicks += tickOffset;
         if (dayTicks > ticksPerDay) dayTicks -= ticksPerDay;
@@ -236,7 +265,7 @@ public class TimeUtils {
      * @return Epoch Timestamp in milliseconds.
      */
     public static long stringToEpoch(final String dateString, final String format, final String timeZone) {
-        return toEpoch(toInstance(dateString, format, timeZone));
+        return toEpoch(toInstant(dateString, format, timeZone));
     }
 
     /**

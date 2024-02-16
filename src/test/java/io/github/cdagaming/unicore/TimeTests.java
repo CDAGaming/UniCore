@@ -45,7 +45,7 @@ class TimeTests {
     @Test
     void testToInstance() {
         String dateString = "2020-01-01 00:00:00";
-        Instant instant = TimeUtils.toInstance(dateString, "yyyy-MM-dd HH:mm:ss", "UTC");
+        Instant instant = TimeUtils.toInstant(dateString, "yyyy-MM-dd HH:mm:ss", "UTC");
         assertNotNull(instant);
         assertEquals("2020-01-01T00:00:00Z", instant.toString());
     }
