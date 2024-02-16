@@ -28,10 +28,7 @@ import io.github.cdagaming.unicore.impl.Pair;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
-import java.time.temporal.TemporalQuery;
-import java.time.temporal.TemporalUnit;
+import java.time.temporal.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -48,96 +45,96 @@ public class TimeUtils {
     /**
      * Create a {@link DateTimeFormatter} using the specified timezone and format.
      *
-     * @param toFormat   Target format string.
-     * @param toTimeZone Target timezone string.
-     * @return the {@link DateTimeFormatter} in the target timezone and format.
+     * @param pattern  The date time format to use.
+     * @param timeZone The targeted time zone to use.
+     * @return the {@link DateTimeFormatter} in the specified timezone and format.
      */
-    public static DateTimeFormatter getFormatter(final String toFormat, final String toTimeZone) {
-        return DateTimeFormatter.ofPattern(toFormat).withZone(ZoneId.of(toTimeZone));
+    public static DateTimeFormatter getFormatter(final String pattern, final String timeZone) {
+        return DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.of(timeZone));
     }
 
     /**
      * Create a {@link DateTimeFormatter} using the specified timezone and format.
      *
-     * @param toFormat Target format string.
-     * @return the {@link DateTimeFormatter} in the target timezone and format.
+     * @param pattern The date time format to use.
+     * @return the {@link DateTimeFormatter} in the specified timezone and format.
      */
-    public static DateTimeFormatter getFormatter(final String toFormat) {
-        return getFormatter(toFormat, DEFAULT_ZONE);
+    public static DateTimeFormatter getFormatter(final String pattern) {
+        return getFormatter(pattern, DEFAULT_ZONE);
     }
 
     /**
      * Format a Date String using the specified timezone and format.
      *
-     * @param date       The {@link Instant} info to interpret.
-     * @param toFormat   Target format string.
-     * @param toTimeZone Target timezone string.
-     * @return Date String in the target timezone and format.
+     * @param date     The {@link TemporalAccessor} info to interpret.
+     * @param pattern  The date time format to use.
+     * @param timeZone The targeted time zone to use.
+     * @return Date String in the specified timezone and format.
      */
-    public static String toString(final Instant date, final String toFormat, final String toTimeZone) {
+    public static String toString(final TemporalAccessor date, final String pattern, final String timeZone) {
         if (date == null) return "";
-        return getFormatter(toFormat, toTimeZone).format(date);
+        return getFormatter(pattern, timeZone).format(date);
     }
 
     /**
      * Format a Date String using the specified timezone and format.
      *
-     * @param date     The {@link Instant} info to interpret.
-     * @param toFormat Target format string.
-     * @return Date String in the target timezone and format.
+     * @param date     The {@link TemporalAccessor} info to interpret.
+     * @param timeZone The targeted time zone to use.
+     * @return Date String in the specified timezone and format.
      */
-    public static String toString(final Instant date, final String toFormat) {
-        return toString(date, toFormat, DEFAULT_ZONE);
+    public static String toString(final TemporalAccessor date, final String timeZone) {
+        return toString(date, timeZone, DEFAULT_ZONE);
     }
 
     /**
      * Format a Date String from one timezone and format into a valid {@link TemporalQuery} instance.
      *
-     * @param dateString   Date String in the original timezone and format.
-     * @param fromFormat   Original format string.
-     * @param fromTimeZone Original timezone string.
-     * @param <T>          The query type to parse to, not null
-     * @param query        The query defining the type to parse to, not null
-     * @return Date String in the target timezone and format.
-     */
-    public static <T> T toInstance(final String dateString, final String fromFormat, final String fromTimeZone, final TemporalQuery<T> query) {
-        return getFormatter(fromFormat, fromTimeZone).parse(dateString, query);
-    }
-
-    /**
-     * Format a Date String from one timezone and format into a valid {@link TemporalQuery} instance.
-     *
-     * @param dateString Date String in the original timezone and format.
-     * @param fromFormat Original format string.
+     * @param dateString Date String in the specified timezone and format.
+     * @param pattern    The date time format to use.
+     * @param timeZone   The targeted time zone to use.
      * @param <T>        The query type to parse to, not null
      * @param query      The query defining the type to parse to, not null
-     * @return Date String in the target timezone and format.
+     * @return Date String in the specified timezone and format.
      */
-    public static <T> T toInstance(final String dateString, final String fromFormat, final TemporalQuery<T> query) {
-        return toInstance(dateString, fromFormat, DEFAULT_ZONE, query);
+    public static <T> T toInstance(final String dateString, final String pattern, final String timeZone, final TemporalQuery<T> query) {
+        return getFormatter(pattern, timeZone).parse(dateString, query);
+    }
+
+    /**
+     * Format a Date String from one timezone and format into a valid {@link TemporalQuery} instance.
+     *
+     * @param dateString Date String in the specified timezone and format.
+     * @param pattern    The date time format to use.
+     * @param <T>        The query type to parse to, not null
+     * @param query      The query defining the type to parse to, not null
+     * @return Date String in the specified timezone and format.
+     */
+    public static <T> T toInstance(final String dateString, final String pattern, final TemporalQuery<T> query) {
+        return toInstance(dateString, pattern, DEFAULT_ZONE, query);
     }
 
     /**
      * Format a Date String from one timezone and format into a valid {@link Instant} instance.
      *
-     * @param dateString   Date String in the original timezone and format.
-     * @param fromFormat   Original format string.
-     * @param fromTimeZone Original timezone string.
-     * @return Date String in the target timezone and format.
+     * @param dateString Date String in the specified timezone and format.
+     * @param pattern    The date time format to use.
+     * @param timeZone   The targeted time zone to use.
+     * @return Date String in the specified timezone and format.
      */
-    public static Instant toInstant(final String dateString, final String fromFormat, final String fromTimeZone) {
-        return toInstance(dateString, fromFormat, fromTimeZone, Instant::from);
+    public static Instant toInstant(final String dateString, final String pattern, final String timeZone) {
+        return toInstance(dateString, pattern, timeZone, Instant::from);
     }
 
     /**
      * Format a Date String from one timezone and format into a valid {@link Instant} instance.
      *
-     * @param dateString Date String in the original timezone and format.
-     * @param fromFormat Original format string.
-     * @return Date String in the target timezone and format.
+     * @param dateString Date String in the specified timezone and format.
+     * @param pattern    The date time format to use.
+     * @return Date String in the specified timezone and format.
      */
-    public static Instant toInstant(final String dateString, final String fromFormat) {
-        return toInstant(dateString, fromFormat, DEFAULT_ZONE);
+    public static Instant toInstant(final String dateString, final String pattern) {
+        return toInstant(dateString, pattern, DEFAULT_ZONE);
     }
 
     /**
@@ -235,48 +232,48 @@ public class TimeUtils {
      * Convert Epoch Timestamp to Date String in the given format and timezone.
      *
      * @param epochTime Epoch Timestamp in seconds.
-     * @param format    Date format string.
-     * @param timeZone  Timezone string.
+     * @param pattern   The date time format to use.
+     * @param timeZone  The targeted time zone to use.
      * @return Date String in the specified format and timezone.
      */
-    public static String epochToString(final long epochTime, final String format, final String timeZone) {
+    public static String epochToString(final long epochTime, final String pattern, final String timeZone) {
         // Convert seconds to milliseconds
-        return toString(fromEpoch(epochTime), format, timeZone);
+        return toString(fromEpoch(epochTime), pattern, timeZone);
     }
 
     /**
      * Convert Epoch Timestamp to Date String in the given format and timezone.
      *
      * @param epochTime Epoch Timestamp in seconds.
-     * @param format    Date format string.
+     * @param pattern   The date time format to use.
      * @return Date String in the specified format and timezone.
      */
-    public static String epochToString(final long epochTime, final String format) {
+    public static String epochToString(final long epochTime, final String pattern) {
         // Convert seconds to milliseconds
-        return epochToString(epochTime, format, DEFAULT_ZONE);
+        return epochToString(epochTime, pattern, DEFAULT_ZONE);
     }
 
     /**
      * Convert Date String to Epoch Timestamp in milliseconds.
      *
      * @param dateString Date String in the given format and timezone.
-     * @param format     Date format string.
-     * @param timeZone   Timezone string.
+     * @param pattern    The date time format to use.
+     * @param timeZone   The targeted time zone to use.
      * @return Epoch Timestamp in milliseconds.
      */
-    public static long stringToEpoch(final String dateString, final String format, final String timeZone) {
-        return toEpoch(toInstant(dateString, format, timeZone));
+    public static long stringToEpoch(final String dateString, final String pattern, final String timeZone) {
+        return toEpoch(toInstant(dateString, pattern, timeZone));
     }
 
     /**
      * Convert Date String to Epoch Timestamp in milliseconds.
      *
      * @param dateString Date String in the given format and timezone.
-     * @param format     Date format string.
+     * @param pattern    The date time format to use.
      * @return Epoch Timestamp in milliseconds.
      */
-    public static long stringToEpoch(final String dateString, final String format) {
-        return stringToEpoch(dateString, format, DEFAULT_ZONE);
+    public static long stringToEpoch(final String dateString, final String pattern) {
+        return stringToEpoch(dateString, pattern, DEFAULT_ZONE);
     }
 
     /**
