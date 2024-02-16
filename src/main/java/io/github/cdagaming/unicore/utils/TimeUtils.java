@@ -40,7 +40,7 @@ public class TimeUtils {
     /**
      * The default timezone to use if otherwise unspecified
      */
-    private static final String DEFAULT_ZONE = "UTC";
+    public static final String DEFAULT_ZONE = "UTC";
 
     /**
      * Create a {@link DateTimeFormatter} using the specified timezone and format.
