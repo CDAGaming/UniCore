@@ -231,24 +231,24 @@ public class TimeUtils {
     /**
      * Convert Epoch Timestamp to Date String in the given format and timezone.
      *
-     * @param epochTime Epoch Timestamp in seconds.
-     * @param pattern   The date time format to use.
-     * @param timeZone  The targeted time zone to use.
+     * @param epochSecond Epoch Timestamp in seconds.
+     * @param pattern     The date time format to use.
+     * @param timeZone    The targeted time zone to use.
      * @return Date String in the specified format and timezone.
      */
-    public static String epochToString(final long epochTime, final String pattern, final String timeZone) {
-        return toString(fromEpoch(epochTime), pattern, timeZone);
+    public static String epochSecondToString(final long epochSecond, final String pattern, final String timeZone) {
+        return toString(fromEpochSecond(epochSecond), pattern, timeZone);
     }
 
     /**
      * Convert Epoch Timestamp to Date String in the given format and timezone.
      *
-     * @param epochTime Epoch Timestamp in seconds.
-     * @param pattern   The date time format to use.
+     * @param epochSecond Epoch Timestamp in seconds.
+     * @param pattern     The date time format to use.
      * @return Date String in the specified format and timezone.
      */
-    public static String epochToString(final long epochTime, final String pattern) {
-        return epochToString(epochTime, pattern, DEFAULT_ZONE);
+    public static String epochSecondToString(final long epochSecond, final String pattern) {
+        return epochSecondToString(epochSecond, pattern, DEFAULT_ZONE);
     }
 
     /**
@@ -259,8 +259,8 @@ public class TimeUtils {
      * @param timeZone   The targeted time zone to use.
      * @return Epoch Timestamp in seconds.
      */
-    public static long stringToEpoch(final String dateString, final String pattern, final String timeZone) {
-        return toEpoch(toInstant(dateString, pattern, timeZone));
+    public static long stringToEpochSecond(final String dateString, final String pattern, final String timeZone) {
+        return toEpochSecond(toInstant(dateString, pattern, timeZone));
     }
 
     /**
@@ -270,18 +270,74 @@ public class TimeUtils {
      * @param pattern    The date time format to use.
      * @return Epoch Timestamp in seconds.
      */
-    public static long stringToEpoch(final String dateString, final String pattern) {
-        return stringToEpoch(dateString, pattern, DEFAULT_ZONE);
+    public static long stringToEpochSecond(final String dateString, final String pattern) {
+        return stringToEpochSecond(dateString, pattern, DEFAULT_ZONE);
+    }
+
+    /**
+     * Convert Epoch Timestamp to Date String in the given format and timezone.
+     *
+     * @param epochMilli Epoch Timestamp in milliseconds.
+     * @param pattern    The date time format to use.
+     * @param timeZone   The targeted time zone to use.
+     * @return Date String in the specified format and timezone.
+     */
+    public static String epochMilliToString(final long epochMilli, final String pattern, final String timeZone) {
+        return toString(fromEpochMilli(epochMilli), pattern, timeZone);
+    }
+
+    /**
+     * Convert Epoch Timestamp to Date String in the given format and timezone.
+     *
+     * @param epochMilli Epoch Timestamp in milliseconds.
+     * @param pattern    The date time format to use.
+     * @return Date String in the specified format and timezone.
+     */
+    public static String epochMilliToString(final long epochMilli, final String pattern) {
+        return epochMilliToString(epochMilli, pattern, DEFAULT_ZONE);
+    }
+
+    /**
+     * Convert Date String to Epoch Timestamp in milliseconds.
+     *
+     * @param dateString Date String in the given format and timezone.
+     * @param pattern    The date time format to use.
+     * @param timeZone   The targeted time zone to use.
+     * @return Epoch Timestamp in milliseconds.
+     */
+    public static long stringToEpochMilli(final String dateString, final String pattern, final String timeZone) {
+        return toEpochMilli(toInstant(dateString, pattern, timeZone));
+    }
+
+    /**
+     * Convert Date String to Epoch Timestamp in milliseconds.
+     *
+     * @param dateString Date String in the given format and timezone.
+     * @param pattern    The date time format to use.
+     * @return Epoch Timestamp in milliseconds.
+     */
+    public static long stringToEpochMilli(final String dateString, final String pattern) {
+        return stringToEpochMilli(dateString, pattern, DEFAULT_ZONE);
     }
 
     /**
      * Retrieve a Time {@link Instant} from the specified epoch time
      *
-     * @param epochTime The epoch time to interpret, in seconds
+     * @param epochSecond The epoch time to interpret, in seconds
      * @return the converted {@link Instant} representing the epoch time
      */
-    public static Instant fromEpoch(final long epochTime) {
-        return Instant.ofEpochSecond(epochTime);
+    public static Instant fromEpochSecond(final long epochSecond) {
+        return Instant.ofEpochSecond(epochSecond);
+    }
+
+    /**
+     * Retrieve a Time {@link Instant} from the specified epoch time
+     *
+     * @param epochMilli The epoch time to interpret, in milliseconds
+     * @return the converted {@link Instant} representing the epoch time
+     */
+    public static Instant fromEpochMilli(final long epochMilli) {
+        return Instant.ofEpochMilli(epochMilli);
     }
 
     /**
@@ -290,8 +346,36 @@ public class TimeUtils {
      * @param data The timestamp data to interpret
      * @return the number of seconds from the Java Epoch, from specified args
      */
-    public static long toEpoch(final Instant data) {
+    public static long toEpochSecond(final Instant data) {
         return data != null ? data.getEpochSecond() : 0L;
+    }
+
+    /**
+     * Gets the number of seconds from the Java Epoch, derived from specified args
+     *
+     * @return the number of seconds from the Java Epoch, from specified args
+     */
+    public static long toEpochSecond() {
+        return toEpochSecond(getCurrentTime());
+    }
+
+    /**
+     * Gets the number of milliseconds from the Java Epoch, derived from specified args
+     *
+     * @param data The timestamp data to interpret
+     * @return the number of milliseconds from the Java Epoch, from specified args
+     */
+    public static long toEpochMilli(final Instant data) {
+        return data != null ? data.toEpochMilli() : 0L;
+    }
+
+    /**
+     * Gets the number of milliseconds from the Java Epoch, derived from specified args
+     *
+     * @return the number of milliseconds from the Java Epoch, from specified args
+     */
+    public static long toEpochMilli() {
+        return toEpochMilli(getCurrentTime());
     }
 
     /**

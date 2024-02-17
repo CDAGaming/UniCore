@@ -69,16 +69,29 @@ class TimeTests {
     }
 
     @Test
-    void testEpochToString() {
+    void testEpochSecondToString() {
         long epochTime = Instant.parse("2020-01-01T00:00:00Z").getEpochSecond();
-        String formattedDate = TimeUtils.epochToString(epochTime, "yyyy-MM-dd HH:mm:ss", "UTC");
+        String formattedDate = TimeUtils.epochSecondToString(epochTime, "yyyy-MM-dd HH:mm:ss", "UTC");
         assertEquals("2020-01-01 00:00:00", formattedDate);
     }
 
     @Test
-    void testStringToEpoch() {
-        long epoch = TimeUtils.stringToEpoch("2020-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss", "UTC");
+    void testEpochMilliToString() {
+        long epochTime = Instant.parse("2020-01-01T00:00:00Z").toEpochMilli();
+        String formattedDate = TimeUtils.epochMilliToString(epochTime, "yyyy-MM-dd HH:mm:ss", "UTC");
+        assertEquals("2020-01-01 00:00:00", formattedDate);
+    }
+
+    @Test
+    void testStringToEpochSecond() {
+        long epoch = TimeUtils.stringToEpochSecond("2020-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss", "UTC");
         assertEquals(Instant.parse("2020-01-01T00:00:00Z").getEpochSecond(), epoch);
+    }
+
+    @Test
+    void testStringToEpochMilli() {
+        long epoch = TimeUtils.stringToEpochMilli("2020-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss", "UTC");
+        assertEquals(Instant.parse("2020-01-01T00:00:00Z").toEpochMilli(), epoch);
     }
 
     @Test
