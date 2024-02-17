@@ -237,7 +237,6 @@ public class TimeUtils {
      * @return Date String in the specified format and timezone.
      */
     public static String epochToString(final long epochTime, final String pattern, final String timeZone) {
-        // Convert seconds to milliseconds
         return toString(fromEpoch(epochTime), pattern, timeZone);
     }
 
@@ -249,28 +248,27 @@ public class TimeUtils {
      * @return Date String in the specified format and timezone.
      */
     public static String epochToString(final long epochTime, final String pattern) {
-        // Convert seconds to milliseconds
         return epochToString(epochTime, pattern, DEFAULT_ZONE);
     }
 
     /**
-     * Convert Date String to Epoch Timestamp in milliseconds.
+     * Convert Date String to Epoch Timestamp in seconds.
      *
      * @param dateString Date String in the given format and timezone.
      * @param pattern    The date time format to use.
      * @param timeZone   The targeted time zone to use.
-     * @return Epoch Timestamp in milliseconds.
+     * @return Epoch Timestamp in seconds.
      */
     public static long stringToEpoch(final String dateString, final String pattern, final String timeZone) {
         return toEpoch(toInstant(dateString, pattern, timeZone));
     }
 
     /**
-     * Convert Date String to Epoch Timestamp in milliseconds.
+     * Convert Date String to Epoch Timestamp in seconds.
      *
      * @param dateString Date String in the given format and timezone.
      * @param pattern    The date time format to use.
-     * @return Epoch Timestamp in milliseconds.
+     * @return Epoch Timestamp in seconds.
      */
     public static long stringToEpoch(final String dateString, final String pattern) {
         return stringToEpoch(dateString, pattern, DEFAULT_ZONE);
@@ -287,19 +285,19 @@ public class TimeUtils {
     }
 
     /**
-     * Gets the number of milliseconds from the Java Epoch, derived from specified args
+     * Gets the number of seconds from the Java Epoch, derived from specified args
      *
      * @param data The timestamp data to interpret
-     * @return the number of milliseconds from the Java Epoch, from specified args
+     * @return the number of seconds from the Java Epoch, from specified args
      */
     public static long toEpoch(final Instant data) {
-        return data != null ? data.toEpochMilli() : 0L;
+        return data != null ? data.getEpochSecond() : 0L;
     }
 
     /**
-     * Gets the number of milliseconds from the Java Epoch, derived from specified args
+     * Gets the number of seconds from the Java Epoch, derived from specified args
      *
-     * @return the number of milliseconds from the Java Epoch, from specified args
+     * @return the number of seconds from the Java Epoch, from specified args
      */
     public static long toEpoch() {
         return toEpoch(getCurrentTime());
