@@ -570,6 +570,52 @@ public class FileUtils {
     }
 
     /**
+     * Attempts to cast or convert an object to the specified target class.
+     * It supports casting for compatible reference types and conversion for
+     * some specific incompatible types, such as String to numeric types.
+     *
+     * @param obj         The object to be casted or converted.
+     * @param targetClass The target class to which the object should be casted or converted.
+     * @return The casted or converted object if successful, otherwise null.
+     */
+    public static <T> T castOrConvert(final Object obj, final Class<T> targetClass) {
+        // If the object is already assignable to the target class, cast it directly.
+        if (targetClass.isAssignableFrom(obj.getClass())) {
+            return targetClass.cast(obj);
+        } else if (obj instanceof String) {
+            // Handle conversion from String to various types.
+            return convertStringToType((String) obj, targetClass);
+        } else {
+            UniCore.LOG.debugError("Conversion or casting not supported between " + obj.getClass().getSimpleName() + " and " + targetClass.getSimpleName());
+            return null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T convertStringToType(final String value, final Class<T> targetType) {
+        Object obj;
+        if (targetType.equals(Boolean.class) || targetType.equals(boolean.class)) {
+            obj = Boolean.valueOf(value);
+        } else if (targetType.equals(Byte.class) || targetType.equals(byte.class)) {
+            obj = Byte.valueOf(value);
+        } else if (targetType.equals(Short.class) || targetType.equals(short.class)) {
+            obj = Short.valueOf(value);
+        } else if (targetType.equals(Integer.class) || targetType.equals(int.class)) {
+            obj = Integer.valueOf(value);
+        } else if (targetType.equals(Long.class) || targetType.equals(long.class)) {
+            obj = Long.valueOf(value);
+        } else if (targetType.equals(Float.class) || targetType.equals(float.class)) {
+            obj = Float.valueOf(value);
+        } else if (targetType.equals(Double.class) || targetType.equals(double.class)) {
+            obj = Double.valueOf(value);
+        } else {
+            UniCore.LOG.debugError("Conversion not supported for: " + targetType.getSimpleName());
+            return null;
+        }
+        return (T) obj;
+    }
+
+    /**
      * Return whether a class exists out of the specified arguments
      *
      * @param loader The {@link ClassLoader} to attempt loading with
