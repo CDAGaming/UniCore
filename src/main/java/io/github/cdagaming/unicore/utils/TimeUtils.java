@@ -295,15 +295,6 @@ public class TimeUtils {
     }
 
     /**
-     * Gets the number of seconds from the Java Epoch, derived from specified args
-     *
-     * @return the number of seconds from the Java Epoch, from specified args
-     */
-    public static long toEpoch() {
-        return toEpoch(getCurrentTime());
-    }
-
-    /**
      * Retrieve the current time
      *
      * @return the current timestamp, as an {@link Instant}

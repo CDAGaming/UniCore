@@ -78,7 +78,7 @@ class TimeTests {
     @Test
     void testStringToEpoch() {
         long epoch = TimeUtils.stringToEpoch("2020-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss", "UTC");
-        assertEquals(Instant.parse("2020-01-01T00:00:00Z").toEpochMilli(), epoch);
+        assertEquals(Instant.parse("2020-01-01T00:00:00Z").getEpochSecond(), epoch);
     }
 
     @Test
