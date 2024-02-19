@@ -136,6 +136,79 @@ public class FileUtils {
     }
 
     /**
+     * Converts a URLs Output into Formatted Json
+     *
+     * @param url         The URL to access
+     * @param encoding    The Charset Encoding to parse URL Contents in
+     * @param targetClass The target class to base parsing on
+     * @param <T>         The data type for the resulting Json
+     * @param args        The Command Arguments to parse
+     * @return The URLs Output, as Formatted Json
+     * @throws Exception If a connection is unable to be established or parsing fails
+     */
+    public static <T> T getJsonData(final URL url, final String encoding, final Class<T> targetClass, final Modifiers... args) throws Exception {
+        return getJsonData(UrlUtils.getURLText(url, encoding), targetClass, args);
+    }
+
+    /**
+     * Converts a URLs Output into Formatted Json
+     *
+     * @param url         The URL to access
+     * @param targetClass The target class to base parsing on
+     * @param <T>         The data type for the resulting Json
+     * @param args        The Command Arguments to parse
+     * @return The URLs Output, as Formatted Json
+     * @throws Exception If a connection is unable to be established or parsing fails
+     */
+    public static <T> T getJsonData(final URL url, final Class<T> targetClass, final Modifiers... args) throws Exception {
+        return getJsonData(url, "UTF-8", targetClass, args);
+    }
+
+    /**
+     * Converts a URLs Output into Formatted Json
+     *
+     * @param url         The URL to access (To be converted into a URL)
+     * @param encoding    The Charset Encoding to parse URL Contents in
+     * @param targetClass The target class to base parsing on
+     * @param <T>         The data type for the resulting Json
+     * @param args        The Command Arguments to parse
+     * @return The URLs Output, as Formatted Json
+     * @throws Exception If a connection is unable to be established or parsing fails
+     */
+    public static <T> T getJsonFromURL(final String url, final String encoding, final Class<T> targetClass, final Modifiers... args) throws Exception {
+        return getJsonData(new URL(url), encoding, targetClass, args);
+    }
+
+    /**
+     * Converts a URLs Output into Formatted Json
+     *
+     * @param url         The URL to access (To be converted into a URL)
+     * @param targetClass The target class to base parsing on
+     * @param <T>         The data type for the resulting Json
+     * @param args        The Command Arguments to parse
+     * @return The URLs Output, as Formatted Json
+     * @throws Exception If a connection is unable to be established or parsing fails
+     */
+    public static <T> T getJsonFromURL(final String url, final Class<T> targetClass, final Modifiers... args) throws Exception {
+        return getJsonFromURL(url, "UTF-8", targetClass, args);
+    }
+
+    /**
+     * Retrieves Raw Data and Converts it into a Parsed Json Syntax
+     *
+     * @param data     The File to access
+     * @param encoding The encoding to parse the file as
+     * @param classObj The target class to base the output on
+     * @param <T>      The Result and Class Type
+     * @param args     The Command Arguments to parse
+     * @return The Parsed Json as the Class Type's Syntax
+     * @throws Exception If Unable to read the File
+     */
+    public static <T> T getJsonData(final File data, final String encoding, final Class<T> classObj, final Modifiers... args) throws Exception {
+        return getJsonData(fileToString(data, encoding), classObj, args);
+    }
+
+    /**
      * Retrieves Raw Data and Converts it into a Parsed Json Syntax
      *
      * @param data     The File to access
@@ -146,19 +219,7 @@ public class FileUtils {
      * @throws Exception If Unable to read the File
      */
     public static <T> T getJsonData(final File data, final Class<T> classObj, final Modifiers... args) throws Exception {
-        return getJsonData(fileToString(data, "UTF-8"), classObj, args);
-    }
-
-    /**
-     * Retrieves Raw Data and Converts it into a Parsed Json Syntax
-     *
-     * @param data The File to access
-     * @param args The Command Arguments to parse
-     * @return The Parsed Json as the Class Type's Syntax
-     * @throws Exception If Unable to read the File
-     */
-    public static JsonElement getJsonData(final File data, final Modifiers... args) throws Exception {
-        return getJsonData(data, JsonElement.class, args);
+        return getJsonData(data, "UTF-8", classObj, args);
     }
 
     /**
@@ -178,12 +239,16 @@ public class FileUtils {
     /**
      * Retrieves Raw Data and Converts it into a Parsed Json Syntax
      *
-     * @param data The json string to access
-     * @param args The Command Arguments to parse
+     * @param data     The File to access
+     * @param encoding The encoding to parse the file as
+     * @param typeObj  The target type to base the output on
+     * @param <T>      The Result and Class Type
+     * @param args     The Command Arguments to parse
      * @return The Parsed Json as the Class Type's Syntax
+     * @throws Exception If Unable to read the File
      */
-    public static JsonElement getJsonData(final String data, final Modifiers... args) {
-        return getJsonData(data, JsonElement.class, args);
+    public static <T> T getJsonData(final File data, final String encoding, final Type typeObj, final Modifiers... args) throws Exception {
+        return getJsonData(fileToString(data, encoding), typeObj, args);
     }
 
     /**
@@ -197,7 +262,7 @@ public class FileUtils {
      * @throws Exception If Unable to read the File
      */
     public static <T> T getJsonData(final File data, final Type typeObj, final Modifiers... args) throws Exception {
-        return getJsonData(fileToString(data, "UTF-8"), typeObj, args);
+        return getJsonData(data, "UTF-8", typeObj, args);
     }
 
     /**
@@ -576,6 +641,7 @@ public class FileUtils {
      *
      * @param obj         The object to be casted or converted.
      * @param targetClass The target class to which the object should be casted or converted.
+     * @param <T>         The type of the class
      * @return The casted or converted object if successful, otherwise null.
      */
     public static <T> T castOrConvert(final Object obj, final Class<T> targetClass) {
