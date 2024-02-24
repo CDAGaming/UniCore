@@ -118,12 +118,8 @@ public class MathUtils {
      * @param max The Maximum Limit for the number
      * @return The adjusted and clamped number
      */
-    public static float clamp(final float num, final float min, final float max) {
-        if (num < min) {
-            return min;
-        } else {
-            return Math.min(num, max);
-        }
+    public static int clamp(final int num, final int min, final int max) {
+        return Math.min(Math.max(num, min), max);
     }
 
     /**
@@ -134,12 +130,56 @@ public class MathUtils {
      * @param max The Maximum Limit for the number
      * @return The adjusted and clamped number
      */
-    public static int clamp(final int num, final int min, final int max) {
-        if (num < min) {
-            return min;
-        } else {
-            return Math.min(num, max);
-        }
+    public static long clamp(final long num, final long min, final long max) {
+        return Math.min(Math.max(num, min), max);
+    }
+
+    /**
+     * Clamps the Specified Number between a minimum and maximum limit
+     *
+     * @param num The number to clamp upon
+     * @param min The Minimum Limit for the number
+     * @param max The Maximum Limit for the number
+     * @return The adjusted and clamped number
+     */
+    public static float clamp(final float num, final float min, final float max) {
+        return Math.min(Math.max(num, min), max);
+    }
+
+    /**
+     * Clamps the Specified Number between a minimum and maximum limit
+     *
+     * @param num The number to clamp upon
+     * @param min The Minimum Limit for the number
+     * @param max The Maximum Limit for the number
+     * @return The adjusted and clamped number
+     */
+    public static double clamp(final double num, final double min, final double max) {
+        return Math.min(Math.max(num, min), max);
+    }
+
+    /**
+     * Linearly Interpolate between the specified values
+     *
+     * @param percentage The percentage between the two points
+     * @param min        The minimum number
+     * @param max        The maximum number
+     * @return The adjusted number
+     */
+    public static float lerp(final float percentage, final float min, final float max) {
+        return min + percentage * (max - min);
+    }
+
+    /**
+     * Linearly Interpolate between the specified values
+     *
+     * @param percentage The percentage between the two points
+     * @param min        The minimum number
+     * @param max        The maximum number
+     * @return The adjusted number
+     */
+    public static double lerp(final double percentage, final double min, final double max) {
+        return min + percentage * (max - min);
     }
 
     /**

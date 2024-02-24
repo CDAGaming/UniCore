@@ -390,6 +390,33 @@ public class TimeUtils {
     }
 
     /**
+     * Retrieve the elapsed time, in nanoseconds
+     *
+     * @return the elapsed time, in nanoseconds
+     */
+    public static long getElapsedNanos() {
+        return System.nanoTime();
+    }
+
+    /**
+     * Retrieve the elapsed time, in milliseconds
+     *
+     * @return the elapsed time, in milliseconds
+     */
+    public static long getElapsedMillis() {
+        return getElapsedNanos() / 1000000L;
+    }
+
+    /**
+     * Retrieve the elapsed time, in seconds
+     *
+     * @return the elapsed time, in seconds
+     */
+    public static long getElapsedSeconds() {
+        return getElapsedMillis() / 1000L;
+    }
+
+    /**
      * Retrieve the {@link Duration} between two {@link Temporal} points in time
      *
      * @param start The starting {@link Temporal} point
