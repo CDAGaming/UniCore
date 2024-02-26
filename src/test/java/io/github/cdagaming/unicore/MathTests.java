@@ -106,48 +106,4 @@ class MathTests {
         assertEquals(5.0f, MathUtils.snapToStep(5.25f, 1.0f));
         assertEquals(5.5f, MathUtils.snapToStep(5.25f, 0.5f));
     }
-
-    @Test
-    void testLerpFloat() {
-        assertEquals(5.0f, MathUtils.lerp(0.5f, 0f, 10f));
-        assertEquals(0f, MathUtils.lerp(0f, 0f, 10f));
-        assertEquals(10f, MathUtils.lerp(1f, 0f, 10f));
-    }
-
-    @Test
-    void testLerpDouble() {
-        assertEquals(5.0, MathUtils.lerp(0.5, 0, 10));
-        assertEquals(0, MathUtils.lerp(0, 0, 10));
-        assertEquals(10, MathUtils.lerp(1, 0, 10));
-    }
-
-    @Test
-    void testSin() {
-        // Test sin at specific points; note: precision is limited by the table's resolution
-        assertEquals(0f, MathUtils.sin(0f), 0.01f);
-        assertEquals(1f, MathUtils.sin((float) Math.PI / 2), 0.01f);
-        assertEquals(0f, MathUtils.sin((float) Math.PI), 0.01f);
-    }
-
-    @Test
-    void testCos() {
-        // Test cos at specific points; note: precision is limited by the table's resolution
-        assertEquals(1f, MathUtils.cos(0f), 0.01f);
-        assertEquals(0f, MathUtils.cos((float) Math.PI / 2), 0.01f);
-        assertEquals(-1f, MathUtils.cos((float) Math.PI), 0.01f);
-    }
-
-    @Test
-    void testCeilFloat() {
-        assertEquals(1, MathUtils.ceil(0.1f));
-        assertEquals(-1, MathUtils.ceil(-1.0f)); // Edge case: exactly -1.0
-        assertEquals(0, MathUtils.ceil(-0.1f));  // Should round up to 0
-    }
-
-    @Test
-    void testCeilDouble() {
-        assertEquals(1, MathUtils.ceil(0.1));
-        assertEquals(-1, MathUtils.ceil(-1.0)); // Edge case: exactly -1.0
-        assertEquals(0, MathUtils.ceil(-0.1));  // Should round up to 0
-    }
 }

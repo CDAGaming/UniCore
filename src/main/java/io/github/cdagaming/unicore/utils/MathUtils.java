@@ -30,14 +30,6 @@ package io.github.cdagaming.unicore.utils;
  * @author CDAGaming
  */
 public class MathUtils {
-    private static final float[] SIN_TABLE = new float[65536];
-
-    static {
-        for (int i = 0; i < SIN_TABLE.length; ++i) {
-            SIN_TABLE[i] = (float) Math.sin((double) i * Math.PI * 2.0 / SIN_TABLE.length);
-        }
-    }
-
     /**
      * Determines whether the specified value is within the specified range
      *
@@ -116,86 +108,6 @@ public class MathUtils {
 
         final double x = Math.pow(10, places);
         return Math.round(value * x) / x;
-    }
-
-    /**
-     * Returns the trigonometric sine of an angle.  Special cases:
-     * <ul><li>If the argument is NaN or an infinity, then the
-     * result is NaN.
-     * <li>If the argument is zero, then the result is a zero with the
-     * same sign as the argument.</ul>
-     *
-     * <p>The computed result must be within 1 ulp of the exact result.
-     * Results must be semi-monotonic.
-     *
-     * @param value an angle, in radians.
-     * @return the sine of the argument.
-     */
-    public static float sin(final float value) {
-        return SIN_TABLE[(int) (value * 10430.378F) & (SIN_TABLE.length - 1)];
-    }
-
-    /**
-     * Returns the trigonometric cosine of an angle. Special cases:
-     * <ul><li>If the argument is NaN or an infinity, then the
-     * result is NaN.
-     * <li>If the argument is zero, then the result is {@code 1.0}.
-     * </ul>
-     *
-     * <p>The computed result must be within 1 ulp of the exact result.
-     * Results must be semi-monotonic.
-     *
-     * @param value an angle, in radians.
-     * @return the cosine of the argument.
-     */
-    public static float cos(final float value) {
-        return SIN_TABLE[(int) (value * 10430.378F + 16384.0F) & (SIN_TABLE.length - 1)];
-    }
-
-    /**
-     * Returns the smallest (closest to negative infinity)
-     * {@code double} value that is greater than or equal to the
-     * argument and is equal to a mathematical integer. Special cases:
-     * <ul><li>If the argument value is already equal to a
-     * mathematical integer, then the result is the same as the
-     * argument.  <li>If the argument is NaN or an infinity or
-     * positive zero or negative zero, then the result is the same as
-     * the argument.  <li>If the argument value is less than zero but
-     * greater than -1.0, then the result is negative zero.</ul> Note
-     * that the value of {@code Math.ceil(x)} is exactly the
-     * value of {@code -Math.floor(-x)}.
-     *
-     * @param value a value.
-     * @return the smallest (closest to negative infinity)
-     * floating-point value that is greater than or equal to
-     * the argument and is equal to a mathematical integer.
-     */
-    public static int ceil(final float value) {
-        int i = (int) value;
-        return value > (float) i ? i + 1 : i;
-    }
-
-    /**
-     * Returns the smallest (closest to negative infinity)
-     * {@code double} value that is greater than or equal to the
-     * argument and is equal to a mathematical integer. Special cases:
-     * <ul><li>If the argument value is already equal to a
-     * mathematical integer, then the result is the same as the
-     * argument.  <li>If the argument is NaN or an infinity or
-     * positive zero or negative zero, then the result is the same as
-     * the argument.  <li>If the argument value is less than zero but
-     * greater than -1.0, then the result is negative zero.</ul> Note
-     * that the value of {@code Math.ceil(x)} is exactly the
-     * value of {@code -Math.floor(-x)}.
-     *
-     * @param value a value.
-     * @return the smallest (closest to negative infinity)
-     * floating-point value that is greater than or equal to
-     * the argument and is equal to a mathematical integer.
-     */
-    public static int ceil(final double value) {
-        int i = (int) value;
-        return value > (double) i ? i + 1 : i;
     }
 
     /**
