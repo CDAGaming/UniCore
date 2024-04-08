@@ -1,4 +1,3 @@
-import org.gradle.internal.jvm.Jvm
 import xyz.wagyourtail.replace_str.ProcessClasses
 
 import java.time.LocalDateTime
@@ -17,17 +16,12 @@ group = "${maven_group}"
 description = 'A collection of API Utilities designed for multiple versions of Java'
 base.archivesName = "${archives_base_name}"
 
-Jvm currentJvm = Jvm.current()
-JavaVersion sourceVersion = currentJvm.javaVersion
 JavaVersion targetVersion = JavaVersion.toVersion("${java_version}")
-
-boolean modernSourceSupport = sourceVersion.isJava9Compatible()
-boolean modernTargetSupport = targetVersion.isJava9Compatible()
+int targetVersionInt = Integer.parseInt(targetVersion.majorVersion)
 
 [java].each {
-    if (!modernSourceSupport) {
-        it.sourceCompatibility = sourceVersion
-        it.targetCompatibility = targetVersion
+    it.toolchain {
+        languageVersion.set(JavaLanguageVersion.of(targetVersionInt))
     }
     it.withSourcesJar()
     it.withJavadocJar()
@@ -54,12 +48,6 @@ repositories {
 }
 
 dependencies {
-    if (!modernTargetSupport) {
-        // If we are targeting a release below Java 9,
-        // work around JDK-8206937 by providing a shim for inaccessible classes.
-        compileOnly("me.eigenraven.java8unsupported:java-8-unsupported-shim:1.0.0")
-    }
-
     // Annotations
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
     compileOnly("com.github.spotbugs:spotbugs-annotations:4.8.3")
@@ -110,8 +98,8 @@ gradle.projectsEvaluated {
 
     // JDK 9 introduced a new way of specifying this that will make sure no newer classes or methods are used.
     // We"ll use that if it"s available, but otherwise we"ll use the older option.
-    if (modernSourceSupport) {
-        it.options.release.set(Integer.parseInt(targetVersion.majorVersion))
+    if (targetVersion.isJava9Compatible()) {
+        it.options.release.set(targetVersionInt)
     }
 
     java.nio.file.Path path = it.destinationDirectory.asFile.getOrNull().toPath()
