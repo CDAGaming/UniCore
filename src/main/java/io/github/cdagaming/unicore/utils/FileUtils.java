@@ -68,6 +68,9 @@ public class FileUtils {
      * The list of the currently detected class names
      */
     private static final Map<String, ClassInfo> CLASS_MAP = StringUtils.newHashMap();
+    /**
+     * The list of currently allocated Thread Factories
+     */
     private static final Map<String, Pair<ScheduledExecutorService, ThreadFactory>> THREAD_FACTORY_MAP = StringUtils.newHashMap();
     /**
      * Whether the class list from {@link FileUtils#scanClasses()} is being iterated upon
