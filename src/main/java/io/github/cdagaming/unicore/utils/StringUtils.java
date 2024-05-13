@@ -106,6 +106,18 @@ public class StringUtils {
      * Regex Pattern for Alphanumeric characters within a string
      */
     private static final Pattern ALPHANUMERIC_PATTERN = Pattern.compile(".*[a-zA-Z0-9].*");
+    /**
+     * The list of the currently cached classToStream retrievals
+     */
+    private static final Map<Class<?>, RStream> CLASS_R_STREAM_MAP = newHashMap();
+    /**
+     * The list of the currently cached streamToFieldStream retrievals
+     */
+    private static final Map<RStream, FieldStream> FIELD_R_STREAM_MAP = newHashMap();
+    /**
+     * The list of the currently cached streamToMethodStream retrievals
+     */
+    private static final Map<RStream, MethodStream> METHOD_R_STREAM_MAP = newHashMap();
 
     /**
      * Attempts to Convert the specified data into a Valid interpretable Java Color
@@ -1477,13 +1489,30 @@ public class StringUtils {
     }
 
     /**
+     * Retrieve a stream of the given class
+     *
+     * @param classToAccess The class to get the stream of
+     * @return The stream instance of the given class
+     */
+    public static RStream getClassStream(final Class<?> classToAccess) {
+        if (!CLASS_R_STREAM_MAP.containsKey(classToAccess)) {
+            CLASS_R_STREAM_MAP.put(classToAccess, RStream.of(classToAccess));
+        }
+        return CLASS_R_STREAM_MAP.get(classToAccess);
+    }
+
+    /**
      * Retrieve a Stream of all fields within the specified class
      *
      * @param classToAccess The class object to interpret
      * @return the output stream
      */
     public static FieldStream getFields(final Class<?> classToAccess) {
-        return RStream.of(classToAccess).fields();
+        final RStream stream = getClassStream(classToAccess);
+        if (!FIELD_R_STREAM_MAP.containsKey(stream)) {
+            FIELD_R_STREAM_MAP.put(stream, stream.fields());
+        }
+        return FIELD_R_STREAM_MAP.get(stream);
     }
 
     /**
@@ -1493,7 +1522,11 @@ public class StringUtils {
      * @return the output stream
      */
     public static MethodStream getMethods(final Class<?> classToAccess) {
-        return RStream.of(classToAccess).methods();
+        final RStream stream = getClassStream(classToAccess);
+        if (!METHOD_R_STREAM_MAP.containsKey(stream)) {
+            METHOD_R_STREAM_MAP.put(stream, stream.methods());
+        }
+        return METHOD_R_STREAM_MAP.get(stream);
     }
 
     /**
@@ -1554,7 +1587,7 @@ public class StringUtils {
      */
     public static Optional<FieldWrapper> getValidField(final Class<?> classToAccess, final String... fieldNames) {
         if (classToAccess == null || fieldNames == null || fieldNames.length == 0) return Optional.empty();
-        return getFields(classToAccess)
+        return getFields(classToAccess).copy()
                 .filter(fieldNames)
                 .jstream()
                 .findFirst();
@@ -1570,7 +1603,7 @@ public class StringUtils {
      */
     public static Optional<MethodWrapper> getValidMethod(final Class<?> classToAccess, final Class<?>[] parameterTypes, final String... methodNames) {
         if (classToAccess == null || methodNames == null || methodNames.length == 0) return Optional.empty();
-        return getMethods(classToAccess)
+        return getMethods(classToAccess).copy()
                 .filter(methodNames).filter(parameterTypes)
                 .jstream()
                 .findFirst();
