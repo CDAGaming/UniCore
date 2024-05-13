@@ -762,7 +762,7 @@ public class FileUtils {
      * @return the valid {@link Class} or null
      */
     public static Class<?> findValidClass(final String... paths) {
-        return findValidClass(true, paths);
+        return findValidClass(OSUtils.JAVA_SPEC < 16, paths);
     }
 
     /**
