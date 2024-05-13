@@ -69,6 +69,10 @@ public class FileUtils {
      */
     private static final Map<String, ClassInfo> CLASS_MAP = StringUtils.newHashMap();
     /**
+     * The list of the currently cached class nameToObject retrievals
+     */
+    private static final Map<String, Class<?>> CLASS_CACHE = StringUtils.newHashMap();
+    /**
      * The list of currently allocated Thread Factories
      */
     private static final Map<String, Pair<ScheduledExecutorService, ThreadFactory>> THREAD_FACTORY_MAP = StringUtils.newHashMap();
@@ -719,13 +723,21 @@ public class FileUtils {
                 case "void":
                     return void.class;
                 default: {
-                    try {
-                        if (loader == null) {
-                            return Class.forName(path);
-                        } else {
-                            return Class.forName(path, init, loader);
+                    if (!CLASS_CACHE.containsKey(path)) {
+                        Class<?> result = null;
+                        try {
+                            if (loader == null) {
+                                result = Class.forName(path);
+                            } else {
+                                result = Class.forName(path, init, loader);
+                            }
+                        } catch (Throwable ignored) {
                         }
-                    } catch (Throwable ignored) {
+                        CLASS_CACHE.put(path, result);
+                    }
+                    final Class<?> result = CLASS_CACHE.get(path);
+                    if (result != null) {
+                        return result;
                     }
                 }
             }
