@@ -53,10 +53,28 @@ public class Pair<U, V> {
     }
 
     /**
+     * Constructs a new {@link Pair} with the given values.
+     *
+     * @param other the other {@link Pair} to copy from
+     */
+    public Pair(Pair<U, V> other) {
+        this(other.getFirst(), other.getSecond());
+    }
+
+    /**
      * Constructs a new empty {@link Pair}.
      */
     public Pair() {
         // N/A
+    }
+
+    /**
+     * Retrieve a copy of this {@link Pair}
+     *
+     * @return a copy of this {@link Pair}
+     */
+    public Pair<U, V> copy() {
+        return new Pair<>(this);
     }
 
     /**

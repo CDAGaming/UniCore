@@ -60,10 +60,28 @@ public class Tuple<T, U, V> {
     }
 
     /**
+     * Constructs a new {@link Tuple} with the given values.
+     *
+     * @param other the other {@link Tuple} to copy from
+     */
+    public Tuple(Tuple<T, U, V> other) {
+        this(other.getFirst(), other.getSecond(), other.getThird());
+    }
+
+    /**
      * Constructs a new empty {@link Tuple}.
      */
     public Tuple() {
         // N/A
+    }
+
+    /**
+     * Retrieve a copy of this {@link Tuple}
+     *
+     * @return a copy of this {@link Tuple}
+     */
+    public Tuple<T, U, V> copy() {
+        return new Tuple<>(this);
     }
 
     /**
