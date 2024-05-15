@@ -52,7 +52,7 @@ public class JavaLogger extends LoggingImpl {
 
         Logger logger = null;
         try {
-            logger = (Logger) FileUtils.findValidClass(null, true, "net.minecraft.src.ModLoader", "ModLoader")
+            logger = (Logger) FileUtils.loadClass("net.minecraft.src.ModLoader", "ModLoader")
                     .getDeclaredMethod("getLogger").invoke(null);
             if (logger != null) {
                 this.appendName = true;

@@ -688,24 +688,33 @@ public class FileUtils {
         return (T) obj;
     }
 
-    private static Class<?> getClass(final String path, final boolean init, final ClassLoader loader) {
+    /**
+     * Return a valid class object, or null if not found
+     * <p>Note: Please use {@link FileUtils#getValidClass(ClassLoader, boolean, String...)} to cache support
+     *
+     * @param name   The fully qualified name of the desired class
+     * @param init   Whether to initialize the class, if found
+     * @param loader The {@link ClassLoader} to attempt loading with
+     * @return the valid {@link Class} or null
+     */
+    public static Class<?> getClass(final String name, final boolean init, final ClassLoader loader) {
         Class<?> result = null;
         try {
-            result = Class.forName(path, init, loader);
+            result = Class.forName(name, init, loader);
         } catch (Throwable ignored) {
         }
         return result;
     }
 
     /**
-     * Return whether a class exists out of the specified arguments
+     * Return a valid class object, or null if not found
      *
      * @param loader The {@link ClassLoader} to attempt loading with
      * @param init   Whether to initialize the class, if found
      * @param paths  The class path(s) to interpret
      * @return the valid {@link Class} or null
      */
-    public static Class<?> findValidClass(final ClassLoader loader, final boolean init, final String... paths) {
+    public static Class<?> getValidClass(final ClassLoader loader, final boolean init, final String... paths) {
         final List<String> classList = StringUtils.newArrayList(paths);
         for (String path : paths) {
             StringUtils.addEntriesNotPresent(classList, MappingUtils.getUnmappedClassesMatching(path, true));
@@ -751,35 +760,67 @@ public class FileUtils {
     }
 
     /**
-     * Return whether a class exists out of the specified arguments
+     * Return a valid class object, or null if not found
      *
      * @param loader The {@link ClassLoader} to attempt loading with
      * @param paths  The class path(s) to interpret
      * @return the valid {@link Class} or null
      */
-    public static Class<?> findValidClass(final ClassLoader loader, final String... paths) {
-        return findValidClass(loader, false, paths);
+    public static Class<?> findClass(final ClassLoader loader, final String... paths) {
+        return getValidClass(loader, false, paths);
     }
 
     /**
-     * Return whether a class exists out of the specified arguments
+     * Return a valid class object, or null if not found
+     *
+     * @param loader The {@link ClassLoader} to attempt loading with
+     * @param paths  The class path(s) to interpret
+     * @return the valid {@link Class} or null
+     */
+    public static Class<?> loadClass(final ClassLoader loader, final String... paths) {
+        return getValidClass(loader, true, paths);
+    }
+
+    /**
+     * Return a valid class object, or null if not found
      *
      * @param useClassLoader Whether to use the thread's current class loader
      * @param paths          The class path(s) to interpret
      * @return the valid {@link Class} or null
      */
-    public static Class<?> findValidClass(final boolean useClassLoader, final String... paths) {
-        return findValidClass(useClassLoader ? CLASS_LOADER : null, paths);
+    public static Class<?> findClass(final boolean useClassLoader, final String... paths) {
+        return findClass(useClassLoader ? CLASS_LOADER : null, paths);
     }
 
     /**
-     * Return whether a class exists out of the specified arguments
+     * Return a valid class object, or null if not found
+     *
+     * @param useClassLoader Whether to use the thread's current class loader
+     * @param paths          The class path(s) to interpret
+     * @return the valid {@link Class} or null
+     */
+    public static Class<?> loadClass(final boolean useClassLoader, final String... paths) {
+        return loadClass(useClassLoader ? CLASS_LOADER : null, paths);
+    }
+
+    /**
+     * Return a valid class object, or null if not found
      *
      * @param paths The class path(s) to interpret
      * @return the valid {@link Class} or null
      */
-    public static Class<?> findValidClass(final String... paths) {
-        return findValidClass(OSUtils.JAVA_SPEC < 16, paths);
+    public static Class<?> findClass(final String... paths) {
+        return findClass(OSUtils.JAVA_SPEC < 16, paths);
+    }
+
+    /**
+     * Return a valid class object, or null if not found
+     *
+     * @param paths The class path(s) to interpret
+     * @return the valid {@link Class} or null
+     */
+    public static Class<?> loadClass(final String... paths) {
+        return loadClass(OSUtils.JAVA_SPEC < 16, paths);
     }
 
     /**
