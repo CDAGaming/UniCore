@@ -726,11 +726,7 @@ public class FileUtils {
                     if (!CLASS_CACHE.containsKey(path)) {
                         Class<?> result = null;
                         try {
-                            if (loader == null) {
-                                result = Class.forName(path);
-                            } else {
-                                result = Class.forName(path, init, loader);
-                            }
+                            result = Class.forName(path, init, loader);
                         } catch (Throwable ignored) {
                         }
                         CLASS_CACHE.put(path, result);
