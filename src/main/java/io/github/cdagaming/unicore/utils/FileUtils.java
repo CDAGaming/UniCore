@@ -71,7 +71,7 @@ public class FileUtils {
     /**
      * The list of the currently cached class nameToObject retrievals
      */
-    private static final Map<String, Pair<Boolean, Class<?>>> CLASS_CACHE = StringUtils.newHashMap();
+    private static final Map<String, Class<?>> CLASS_CACHE = StringUtils.newHashMap();
     /**
      * The list of currently allocated Thread Factories
      */
@@ -690,31 +690,14 @@ public class FileUtils {
 
     /**
      * Return a valid class object, or null if not found
-     * <p>Note: Please use {@link FileUtils#getValidClass(ClassLoader, boolean, String...)} to cache support
      *
-     * @param name   The fully qualified name of the desired class
-     * @param init   Whether to initialize the class, if found
-     * @param loader The {@link ClassLoader} to attempt loading with
+     * @param loader     The {@link ClassLoader} to attempt loading with
+     * @param init       Whether to initialize the class, if found
+     * @param forceCache Whether to re-populate the cache entry
+     * @param paths      The class path(s) to interpret
      * @return the valid {@link Class} or null
      */
-    public static Class<?> getClass(final String name, final boolean init, final ClassLoader loader) {
-        Class<?> result = null;
-        try {
-            result = Class.forName(name, init, loader);
-        } catch (Throwable ignored) {
-        }
-        return result;
-    }
-
-    /**
-     * Return a valid class object, or null if not found
-     *
-     * @param loader The {@link ClassLoader} to attempt loading with
-     * @param init   Whether to initialize the class, if found
-     * @param paths  The class path(s) to interpret
-     * @return the valid {@link Class} or null
-     */
-    public static Class<?> getValidClass(final ClassLoader loader, final boolean init, final String... paths) {
+    public static Class<?> getValidClass(final ClassLoader loader, final boolean init, final boolean forceCache, final String... paths) {
         final List<String> classList = StringUtils.newArrayList(paths);
         for (String path : paths) {
             StringUtils.addEntriesNotPresent(classList, MappingUtils.getUnmappedClassesMatching(path, true));
@@ -741,22 +724,34 @@ public class FileUtils {
                 case "void":
                     return void.class;
                 default: {
-                    if (!CLASS_CACHE.containsKey(path)) {
-                        final Class<?> clazz = getClass(path, init, loader);
-                        CLASS_CACHE.put(path, clazz != null ? new Pair<>(init, clazz) : null);
-                    }
-                    final Pair<Boolean, Class<?>> result = CLASS_CACHE.get(path);
-                    if (result != null && result.getSecond() != null) {
-                        if (!result.getFirst() && init) {
-                            result.setFirst(true);
-                            result.setSecond(getClass(path, true, loader));
+                    if (!CLASS_CACHE.containsKey(path) || forceCache) {
+                        Class<?> result = null;
+                        try {
+                            result = Class.forName(path, init, loader);
+                        } catch (Throwable ignored) {
                         }
-                        return result.getSecond();
+                        CLASS_CACHE.put(path, result);
+                    }
+                    final Class<?> result = CLASS_CACHE.get(path);
+                    if (result != null) {
+                        return result;
                     }
                 }
             }
         }
         return null;
+    }
+
+    /**
+     * Return a valid class object, or null if not found
+     *
+     * @param loader The {@link ClassLoader} to attempt loading with
+     * @param init   Whether to initialize the class, if found
+     * @param paths  The class path(s) to interpret
+     * @return the valid {@link Class} or null
+     */
+    public static Class<?> getValidClass(final ClassLoader loader, final boolean init, final String... paths) {
+        return getValidClass(loader, init, false, paths);
     }
 
     /**
