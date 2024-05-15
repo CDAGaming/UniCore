@@ -749,7 +749,7 @@ public class FileUtils {
                     if (result != null && result.getSecond() != null) {
                         if (!result.getFirst() && init) {
                             result.setFirst(true);
-                            result.putSecond(getClass(path, true, loader));
+                            result.setSecond(getClass(path, true, loader));
                         }
                         return result.getSecond();
                     }
