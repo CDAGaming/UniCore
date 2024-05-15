@@ -71,7 +71,7 @@ public class FileUtils {
     /**
      * The list of the currently cached class nameToObject retrievals
      */
-    private static final Map<String, Class<?>> CLASS_CACHE = StringUtils.newHashMap();
+    private static final Map<String, Pair<Boolean, Class<?>>> CLASS_CACHE = StringUtils.newHashMap();
     /**
      * The list of currently allocated Thread Factories
      */
@@ -688,6 +688,15 @@ public class FileUtils {
         return (T) obj;
     }
 
+    private static Class<?> getClass(final String path, final boolean init, final ClassLoader loader) {
+        Class<?> result = null;
+        try {
+            result = Class.forName(path, init, loader);
+        } catch (Throwable ignored) {
+        }
+        return result;
+    }
+
     /**
      * Return whether a class exists out of the specified arguments
      *
@@ -724,16 +733,16 @@ public class FileUtils {
                     return void.class;
                 default: {
                     if (!CLASS_CACHE.containsKey(path)) {
-                        Class<?> result = null;
-                        try {
-                            result = Class.forName(path, init, loader);
-                        } catch (Throwable ignored) {
-                        }
-                        CLASS_CACHE.put(path, result);
+                        final Class<?> clazz = getClass(path, init, loader);
+                        CLASS_CACHE.put(path, clazz != null ? new Pair<>(init, clazz) : null);
                     }
-                    final Class<?> result = CLASS_CACHE.get(path);
-                    if (result != null) {
-                        return result;
+                    final Pair<Boolean, Class<?>> result = CLASS_CACHE.get(path);
+                    if (result != null && result.getSecond() != null) {
+                        if (!result.getFirst() && init) {
+                            result.setFirst(true);
+                            result.putSecond(getClass(path, true, loader));
+                        }
+                        return result.getSecond();
                     }
                 }
             }
