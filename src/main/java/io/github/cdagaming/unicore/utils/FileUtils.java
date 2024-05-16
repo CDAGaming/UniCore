@@ -32,6 +32,7 @@ import io.github.cdagaming.unicore.UniCore;
 import io.github.cdagaming.unicore.impl.Pair;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
+import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
 
 import java.io.*;
@@ -41,10 +42,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystem;
 import java.nio.file.*;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -601,33 +599,53 @@ public class FileUtils {
      */
     protected static Pair<Boolean, Map<String, ClassInfo>> isSubclassOf(final ClassInfo originalClass, final Class<?> superClass, final Map<String, ClassInfo> scannedClasses) {
         if (originalClass == null || superClass == null) {
-            // Top of hierarchy, or no super class defined
             return new Pair<>(false, scannedClasses);
-        } else if (originalClass.getName().equals(superClass.getName())) {
-            return new Pair<>(true, scannedClasses);
-        } else {
-            // Attempt to see if things match with their deobfuscated names
-            final String originalName = MappingUtils.getMappedPath(originalClass.getName());
-            final String className = MappingUtils.getCanonicalName(originalClass);
+        }
+
+        // To track visited classes to prevent cycles and redundant checks
+        final Set<String> visitedClasses = new HashSet<>();
+
+        // Stack to simulate the recursion
+        final Deque<ClassInfo> stack = new ArrayDeque<>();
+        stack.push(originalClass);
+
+        while (!stack.isEmpty()) {
+            final ClassInfo currentClass = stack.pop();
+
+            // Get the mapped and canonical names
+            final String originalName = MappingUtils.getMappedPath(currentClass.getName());
+            final String className = MappingUtils.getCanonicalName(currentClass);
             final String superClassName = MappingUtils.getCanonicalName(superClass);
+
+            // Check if the current class is the target superclass
             if (className.equals(superClassName)) {
                 return new Pair<>(true, scannedClasses);
-            } else {
-                // try the next level up the hierarchy and add this class to scanned history.
-                scannedClasses.put(originalName, originalClass);
-                final Pair<Boolean, Map<String, ClassInfo>> subClassInfo = isSubclassOf(originalClass.getSuperclass(), superClass, scannedClasses);
+            }
 
-                if (!subClassInfo.getFirst() && originalClass.getInterfaces() != null) {
-                    for (final ClassInfo inter : originalClass.getInterfaces()) {
-                        if (isSubclassOf(inter, superClass, scannedClasses).getFirst()) {
-                            return new Pair<>(true, scannedClasses);
-                        }
+            // Mark the current class as visited and add it to scannedClasses
+            if (!visitedClasses.contains(originalName)) {
+                visitedClasses.add(originalName);
+                scannedClasses.put(originalName, currentClass);
+            }
+
+            // Add superclass to the stack if not already visited
+            final ClassInfo superClassInfo = currentClass.getSuperclass();
+            if (superClassInfo != null && !visitedClasses.contains(MappingUtils.getMappedPath(superClassInfo.getName()))) {
+                stack.push(superClassInfo);
+            }
+
+            // Add interfaces to the stack if not already visited
+            final ClassInfoList interfaces = currentClass.getInterfaces();
+            if (interfaces != null) {
+                for (ClassInfo interfaceInfo : interfaces) {
+                    if (!visitedClasses.contains(MappingUtils.getMappedPath(interfaceInfo.getName()))) {
+                        stack.push(interfaceInfo);
                     }
                 }
-
-                return new Pair<>(subClassInfo.getFirst(), scannedClasses);
             }
         }
+
+        return new Pair<>(false, scannedClasses);
     }
 
     /**
