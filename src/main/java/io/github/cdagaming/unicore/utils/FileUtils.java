@@ -633,16 +633,6 @@ public class FileUtils {
             if (superClassInfo != null && !visitedClasses.contains(MappingUtils.getMappedPath(superClassInfo.getName()))) {
                 stack.push(superClassInfo);
             }
-
-            // Add interfaces to the stack if not already visited
-            final ClassInfoList interfaces = currentClass.getInterfaces();
-            if (interfaces != null) {
-                for (ClassInfo interfaceInfo : interfaces) {
-                    if (!visitedClasses.contains(MappingUtils.getMappedPath(interfaceInfo.getName()))) {
-                        stack.push(interfaceInfo);
-                    }
-                }
-            }
         }
 
         return new Pair<>(false, scannedClasses);
