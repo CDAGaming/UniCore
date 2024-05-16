@@ -602,6 +602,9 @@ public class FileUtils {
             return new Pair<>(false, scannedClasses);
         }
 
+        // Store the target name for the superclass
+        final String superClassName = MappingUtils.getCanonicalName(superClass);
+
         // To track visited classes to prevent cycles and redundant checks
         final Set<String> visitedClasses = new HashSet<>();
 
@@ -615,7 +618,6 @@ public class FileUtils {
             // Get the mapped and canonical names
             final String originalName = MappingUtils.getMappedPath(currentClass.getName());
             final String className = MappingUtils.getCanonicalName(currentClass);
-            final String superClassName = MappingUtils.getCanonicalName(superClass);
 
             // Check if the current class is the target superclass
             if (className.equals(superClassName)) {
