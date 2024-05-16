@@ -81,7 +81,7 @@ public class MappingUtils {
                     UniCore.LOG.debugInfo("Loading Mappings...");
                     final Instant time = TimeUtils.getCurrentTime();
                     for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-                        String[] parts = line.split(" ");
+                        final String[] parts = line.replace("/", ".").split(" ");
                         if (parts[0].equals("CL:")) {
                             cm.put(parts[1], parts[2]);
                         }
@@ -104,7 +104,7 @@ public class MappingUtils {
      */
     public static String getMappedPath(String input) {
         if (areMappingsLoaded() && classMap.containsKey(input)) {
-            return classMap.get(input).replace("/", ".");
+            return classMap.get(input);
         }
         return input;
     }
@@ -119,11 +119,9 @@ public class MappingUtils {
     public static Set<String> getUnmappedClassesMatching(String start, BiPredicate<String, String> matchCondition) {
         final Set<String> matches = new HashSet<>();
         if (areMappingsLoaded()) {
-            start = start.replace(".", "/");
-
             for (Map.Entry<String, String> entry : classMap.entrySet()) {
                 if (matchCondition.test(entry.getValue(), start)) {
-                    matches.add(entry.getKey().replace("/", "."));
+                    matches.add(entry.getKey());
                 }
             }
         }
@@ -183,12 +181,12 @@ public class MappingUtils {
      */
     private static String getClassName(final boolean simpleName, final String primary, final String secondary) {
         String result = areMappingsLoaded() ? classMap.get(
-                primary.replace(".", "/")
+                primary
         ) : null;
         if (result == null) {
             result = simpleName ? secondary : primary;
         } else {
-            result = simpleName ? result.substring(result.lastIndexOf("/") + 1) : result.replace("/", ".");
+            result = simpleName ? result.substring(result.lastIndexOf(".") + 1) : result;
         }
         return result;
     }
