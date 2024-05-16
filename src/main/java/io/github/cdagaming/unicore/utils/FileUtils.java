@@ -80,6 +80,19 @@ public class FileUtils {
      * Whether the class list from {@link FileUtils#scanClasses()} is being iterated upon
      */
     private static boolean ARE_CLASSES_LOADING = false;
+    private static boolean ALLOW_CLASS_SCANNING = false;
+
+    public static boolean allowClassScanning() {
+        return ALLOW_CLASS_SCANNING;
+    }
+
+    public static void setAllowClassScanning(boolean allowClassScanning) {
+        ALLOW_CLASS_SCANNING = allowClassScanning;
+
+        if (!allowClassScanning && !CLASS_MAP.isEmpty()) {
+            CLASS_MAP.clear();
+        }
+    }
 
     /**
      * Shutdown the specified Thread Factories
@@ -562,28 +575,30 @@ public class FileUtils {
     public static Map<String, ClassInfo> getClassNamesMatchingSuperType(final List<Class<?>> searchList, final String... sourcePackages) {
         final Map<String, ClassInfo> matchingClasses = StringUtils.newHashMap();
 
-        Pair<Boolean, Map<String, ClassInfo>> subClassData = new Pair<>(false, StringUtils.newHashMap());
-        for (Map.Entry<String, ClassInfo> classInfo : getClasses(sourcePackages).entrySet()) {
-            for (Class<?> searchClass : searchList) {
-                subClassData = isSubclassOf(classInfo.getValue(), searchClass, subClassData.getSecond());
+        if (allowClassScanning()) {
+            Pair<Boolean, Map<String, ClassInfo>> subClassData = new Pair<>(false, StringUtils.newHashMap());
+            for (Map.Entry<String, ClassInfo> classInfo : getClasses(sourcePackages).entrySet()) {
+                for (Class<?> searchClass : searchList) {
+                    subClassData = isSubclassOf(classInfo.getValue(), searchClass, subClassData.getSecond());
 
-                if (subClassData.getFirst()) {
-                    // If superclass data was found, add the scanned classes
-                    // as well as the original class
-                    if (!matchingClasses.containsKey(classInfo.getKey())) {
-                        matchingClasses.put(classInfo.getKey(), classInfo.getValue());
-                    }
-
-                    for (Map.Entry<String, ClassInfo> subClassInfo : subClassData.getSecond().entrySet()) {
-                        if (!matchingClasses.containsKey(subClassInfo.getKey())) {
-                            matchingClasses.put(subClassInfo.getKey(), subClassInfo.getValue());
+                    if (subClassData.getFirst()) {
+                        // If superclass data was found, add the scanned classes
+                        // as well as the original class
+                        if (!matchingClasses.containsKey(classInfo.getKey())) {
+                            matchingClasses.put(classInfo.getKey(), classInfo.getValue());
                         }
-                    }
 
-                    break;
-                } else {
-                    // If no superclass data found, reset for next data
-                    subClassData = new Pair<>(false, StringUtils.newHashMap());
+                        for (Map.Entry<String, ClassInfo> subClassInfo : subClassData.getSecond().entrySet()) {
+                            if (!matchingClasses.containsKey(subClassInfo.getKey())) {
+                                matchingClasses.put(subClassInfo.getKey(), subClassInfo.getValue());
+                            }
+                        }
+
+                        break;
+                    } else {
+                        // If no superclass data found, reset for next data
+                        subClassData = new Pair<>(false, StringUtils.newHashMap());
+                    }
                 }
             }
         }
@@ -824,14 +839,16 @@ public class FileUtils {
      * @return {@link Boolean#TRUE} if condition is satisfied
      */
     public static boolean canScanClasses() {
-        return !ARE_CLASSES_LOADING;
+        return allowClassScanning() && !ARE_CLASSES_LOADING;
     }
 
     /**
      * Begin a new Thread, executing {@link FileUtils#scanClasses()}
      */
     public static void detectClasses() {
-        UniCore.getThreadFactory().newThread(FileUtils::scanClasses).start();
+        if (allowClassScanning()) {
+            UniCore.getThreadFactory().newThread(FileUtils::scanClasses).start();
+        }
     }
 
     /**
