@@ -606,7 +606,7 @@ public class FileUtils {
         final String superClassName = MappingUtils.getCanonicalName(superClass);
 
         // To track visited classes to prevent cycles and redundant checks
-        final Set<String> visitedClasses = new HashSet<>();
+        final Set<ClassInfo> visitedClasses = new HashSet<>();
 
         // Stack to simulate the recursion
         final Deque<ClassInfo> stack = new ArrayDeque<>();
@@ -615,25 +615,22 @@ public class FileUtils {
         while (!stack.isEmpty()) {
             final ClassInfo currentClass = stack.pop();
 
-            // Get the mapped and canonical names
-            final String originalName = MappingUtils.getMappedPath(currentClass.getName());
-            final String className = MappingUtils.getCanonicalName(currentClass);
+            // Mark the current class as visited
+            if (visitedClasses.add(currentClass)) {
+                // Get the canonical name and add it to scannedClasses
+                final String className = MappingUtils.getCanonicalName(currentClass);
+                scannedClasses.put(className, currentClass);
 
-            // Check if the current class is the target superclass
-            if (className.equals(superClassName)) {
-                return new Pair<>(true, scannedClasses);
-            }
+                // Check if the current class is the target superclass
+                if (className.equals(superClassName)) {
+                    return new Pair<>(true, scannedClasses);
+                }
 
-            // Mark the current class as visited and add it to scannedClasses
-            if (!visitedClasses.contains(originalName)) {
-                visitedClasses.add(originalName);
-                scannedClasses.put(originalName, currentClass);
-            }
-
-            // Add superclass to the stack if not already visited
-            final ClassInfo superClassInfo = currentClass.getSuperclass();
-            if (superClassInfo != null && !visitedClasses.contains(MappingUtils.getMappedPath(superClassInfo.getName()))) {
-                stack.push(superClassInfo);
+                // Add superclass to the stack if not already visited
+                final ClassInfo superClassInfo = currentClass.getSuperclass();
+                if (superClassInfo != null && !visitedClasses.contains(superClassInfo)) {
+                    stack.push(superClassInfo);
+                }
             }
         }
 
