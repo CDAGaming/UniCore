@@ -32,7 +32,6 @@ import io.github.cdagaming.unicore.UniCore;
 import io.github.cdagaming.unicore.impl.Pair;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
-import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
 
 import java.io.*;
@@ -560,19 +559,12 @@ public class FileUtils {
     public static Map<String, ClassInfo> getClassNamesMatchingSuperType(final List<Class<?>> searchList, final String... sourcePackages) {
         final Map<String, ClassInfo> matchingClasses = StringUtils.newHashMap();
 
-        Pair<Boolean, Map<String, ClassInfo>> subClassData = new Pair<>(false, StringUtils.newHashMap());
+        final Map<String, ClassInfo> subClassData = StringUtils.newHashMap();
         for (Map.Entry<String, ClassInfo> classInfo : getClasses(sourcePackages).entrySet()) {
             for (Class<?> searchClass : searchList) {
-                subClassData = isSubclassOf(classInfo.getValue(), searchClass, subClassData.getSecond());
-
-                if (subClassData.getFirst()) {
+                if (isSubclassOf(classInfo.getValue(), searchClass, subClassData)) {
                     // If superclass data was found, add the scanned classes
-                    // as well as the original class
-                    if (!matchingClasses.containsKey(classInfo.getKey())) {
-                        matchingClasses.put(classInfo.getKey(), classInfo.getValue());
-                    }
-
-                    for (Map.Entry<String, ClassInfo> subClassInfo : subClassData.getSecond().entrySet()) {
+                    for (Map.Entry<String, ClassInfo> subClassInfo : subClassData.entrySet()) {
                         if (!matchingClasses.containsKey(subClassInfo.getKey())) {
                             matchingClasses.put(subClassInfo.getKey(), subClassInfo.getValue());
                         }
@@ -581,7 +573,7 @@ public class FileUtils {
                     break;
                 } else {
                     // If no superclass data found, reset for next data
-                    subClassData = new Pair<>(false, StringUtils.newHashMap());
+                    subClassData.clear();
                 }
             }
         }
@@ -594,12 +586,12 @@ public class FileUtils {
      *
      * @param originalClass  The original class to scan for the specified sub/super-class
      * @param superClass     The sub/super-class target to locate
-     * @param scannedClasses The class hierarchy of scanned data
-     * @return A pair with the format of isSubclassOf:scannedClasses
+     * @param scannedClasses The class hierarchy of scanned data (Output Value)
+     * @return whether we found sub/super class data
      */
-    protected static Pair<Boolean, Map<String, ClassInfo>> isSubclassOf(final ClassInfo originalClass, final Class<?> superClass, final Map<String, ClassInfo> scannedClasses) {
+    protected static boolean isSubclassOf(final ClassInfo originalClass, final Class<?> superClass, final Map<String, ClassInfo> scannedClasses) {
         if (originalClass == null || superClass == null) {
-            return new Pair<>(false, scannedClasses);
+            return false;
         }
 
         // Store the target name for the superclass
@@ -623,7 +615,7 @@ public class FileUtils {
 
                 // Check if the current class is the target superclass
                 if (className.equals(superClassName)) {
-                    return new Pair<>(true, scannedClasses);
+                    return true;
                 }
 
                 // Add superclass to the stack if not already visited
@@ -633,8 +625,7 @@ public class FileUtils {
                 }
             }
         }
-
-        return new Pair<>(false, scannedClasses);
+        return false;
     }
 
     /**
