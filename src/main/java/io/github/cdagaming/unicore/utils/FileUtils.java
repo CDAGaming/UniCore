@@ -74,9 +74,17 @@ public class FileUtils {
      */
     private static final Map<String, Pair<ScheduledExecutorService, ThreadFactory>> THREAD_FACTORY_MAP = StringUtils.newHashMap();
     /**
-     * Whether the class list from {@link FileUtils#scanClasses()} is being iterated upon
+     * Whether the class list from {@link FileUtils#getClassMap()} is being iterated upon
      */
     private static boolean ARE_CLASSES_LOADING = false;
+    /**
+     * Whether we have already performed a full class scan through {@link FileUtils#getClassMap()}
+     */
+    private static boolean ARE_CLASSES_SCANNED = false;
+    /**
+     * Whether functions utilizing ClassGraph are enabled
+     */
+    private static boolean CLASS_GRAPH_ENABLED = true;
 
     /**
      * Shutdown the specified Thread Factories
@@ -558,6 +566,7 @@ public class FileUtils {
      */
     public static Map<String, ClassInfo> getClassNamesMatchingSuperType(final List<Class<?>> searchList, final String... sourcePackages) {
         final Map<String, ClassInfo> matchingClasses = StringUtils.newHashMap();
+        if (!isClassGraphEnabled()) return matchingClasses;
 
         final Map<String, ClassInfo> subClassData = StringUtils.newHashMap();
         for (Map.Entry<String, ClassInfo> classInfo : getClasses(sourcePackages).entrySet()) {
@@ -590,7 +599,7 @@ public class FileUtils {
      * @return whether we found sub/super class data
      */
     protected static boolean isSubclassOf(final ClassInfo originalClass, final Class<?> superClass, final Map<String, ClassInfo> scannedClasses) {
-        if (originalClass == null || superClass == null) {
+        if (!isClassGraphEnabled() || originalClass == null || superClass == null) {
             return false;
         }
 
@@ -817,7 +826,7 @@ public class FileUtils {
     }
 
     /**
-     * Return whether the class list from {@link FileUtils#scanClasses()} is being iterated upon
+     * Return whether the class list from {@link FileUtils#getClassMap()} is being iterated upon
      *
      * @return {@link Boolean#TRUE} if condition is satisfied
      */
@@ -826,21 +835,47 @@ public class FileUtils {
     }
 
     /**
-     * Begin a new Thread, executing {@link FileUtils#scanClasses()}
+     * Return whether we have already performed a full class scan through {@link FileUtils#getClassMap()}
      */
-    public static void detectClasses() {
-        UniCore.getThreadFactory().newThread(FileUtils::scanClasses).start();
+    public static boolean hasScannedClasses() {
+        return ARE_CLASSES_SCANNED;
     }
 
     /**
-     * Clear the existing class list, then retrieve and cache all known classes within the Class Loader
+     * Return whether functions utilizing ClassGraph are enabled
+     *
+     * @return {@link Boolean#TRUE} if condition is satisfied
+     */
+    public static boolean isClassGraphEnabled() {
+        return CLASS_GRAPH_ENABLED;
+    }
+
+    /**
+     * Sets whether functions utilizing ClassGraph are enabled
+     *
+     * @param isEnabled if ClassGraph functions are enabled
+     */
+    public static void setClassGraphEnabled(final boolean isEnabled) {
+        CLASS_GRAPH_ENABLED = isEnabled;
+    }
+
+    /**
+     * Begin a new Thread, executing {@link FileUtils#getClassMap()}
+     */
+    public static void detectClasses() {
+        if (isClassGraphEnabled()) {
+            UniCore.getThreadFactory().newThread(FileUtils::getClassMap).start();
+        }
+    }
+
+    /**
+     * Retrieve and Cache all known classes within the Class Loader
      *
      * @return a map of all known classes
      */
-    public static Map<String, ClassInfo> scanClasses() {
-        if (canScanClasses()) {
+    public static Map<String, ClassInfo> getClassMap() {
+        if (isClassGraphEnabled() && canScanClasses() && !hasScannedClasses()) {
             ARE_CLASSES_LOADING = true;
-            CLASS_MAP.clear();
 
             // Attempt to get all possible classes from the JVM Class Loader
             final ClassGraph graphInfo = new ClassGraph()
@@ -868,20 +903,20 @@ public class FileUtils {
             }
 
             ARE_CLASSES_LOADING = false;
+            ARE_CLASSES_SCANNED = true;
         }
         return StringUtils.newHashMap(CLASS_MAP);
     }
 
-    /**
-     * Retrieve and Cache all known classes within the Class Loader
-     *
-     * @return a map of all known classes
-     */
-    public static Map<String, ClassInfo> getClassMap() {
-        if (CLASS_MAP.isEmpty()) {
-            return scanClasses();
+    public static void clearClassMap(final boolean allowReScan) {
+        if (allowReScan) {
+            ARE_CLASSES_SCANNED = false;
         }
-        return StringUtils.newHashMap(CLASS_MAP);
+        CLASS_MAP.clear();
+    }
+
+    public static void clearClassMap() {
+        clearClassMap(false);
     }
 
     /**
@@ -892,6 +927,8 @@ public class FileUtils {
      */
     public static Map<String, ClassInfo> getClasses(final String... paths) {
         final Map<String, ClassInfo> results = StringUtils.newHashMap();
+        if (!isClassGraphEnabled()) return results;
+
         final Map<String, Set<String>> unmappedNames = StringUtils.newHashMap();
         final boolean hasNoPaths = paths == null || paths.length == 0;
         if (!hasNoPaths) {
