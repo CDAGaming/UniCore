@@ -81,7 +81,7 @@ public class MappingUtils {
                     UniCore.LOG.debugInfo("Loading Mappings...");
                     final Instant time = TimeUtils.getCurrentTime();
                     for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-                        final String[] parts = line.replace("/", ".").split(" ");
+                        final String[] parts = line.split(" ");
                         if (parts[0].equals("CL:")) {
                             cm.put(parts[1], parts[2]);
                         }
