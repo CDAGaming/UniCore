@@ -681,13 +681,13 @@ public class TranslationUtils {
     }
 
     /**
-     * Determines whether the specified translation exists for the current language
+     * Determines whether the specified translation exists for the current or default language
      *
      * @param translationKey The raw String to interpret
      * @return whether the specified translation exists
      */
     public boolean hasTranslation(final String translationKey) {
-        return hasTranslationFrom(languageId, translationKey);
+        return hasTranslationFrom(languageId, translationKey) || hasTranslationFrom(getDefaultLanguage(), translationKey);
     }
 
     /**
@@ -705,12 +705,15 @@ public class TranslationUtils {
     }
 
     /**
-     * Retrieves the specified translation, if it exists for the current language
+     * Retrieves the specified translation, if it exists for the current or default language
      *
      * @param translationKey The raw String to interpret
      * @return whether the specified translation exists
      */
     public String getTranslation(final String translationKey) {
-        return getTranslationFrom(languageId, translationKey);
+        return StringUtils.getOrDefault(
+                getTranslationFrom(languageId, translationKey),
+                getTranslationFrom(getDefaultLanguage(), translationKey)
+        );
     }
 }
