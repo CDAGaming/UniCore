@@ -862,16 +862,18 @@ public class StringUtils {
      * @return The converted and valid String, in an iconKey Format
      */
     public static String formatAsIcon(final String original, final String whitespaceIndex) {
-        String formattedKey = original;
-        if (isNullOrEmpty(formattedKey)) {
-            return formattedKey;
-        } else {
-            if (containsWhitespace(formattedKey)) {
-                formattedKey = formattedKey.replaceAll("\\s+", whitespaceIndex);
-            }
-            formattedKey = formattedKey.replaceAll("[^a-zA-Z0-9_-]", "_");
-            return formattedKey.toLowerCase().trim();
+        if (isNullOrEmpty(original)) {
+            return original;
         }
+
+        String formattedKey = original.trim();
+
+        if (containsWhitespace(formattedKey)) {
+            formattedKey = formattedKey.replaceAll("\\s+", whitespaceIndex);
+        }
+
+        formattedKey = formattedKey.replaceAll("[^a-zA-Z0-9_-]", "_").toLowerCase();
+        return formattedKey;
     }
 
     /**
@@ -1085,31 +1087,24 @@ public class StringUtils {
      * @return The formatted and evaluated String
      */
     public static String formatWord(final String original, final boolean avoid, final boolean skipSymbolReplacement, final int caseCheckTimes) {
-        String formattedKey = original;
-        if (isNullOrEmpty(formattedKey) || avoid) {
-            return formattedKey;
-        } else {
-            if (containsWhitespace(formattedKey)) {
-                formattedKey = formattedKey.replaceAll("\\s+", " ");
-            }
-
-            if (!skipSymbolReplacement) {
-                if (formattedKey.contains("_")) {
-                    formattedKey = formattedKey.replaceAll("_", " ");
-                }
-                if (formattedKey.contains("-")) {
-                    formattedKey = formattedKey.replaceAll("-", " ");
-                }
-                if (BRACKET_PATTERN.matcher(formattedKey).find()) {
-                    formattedKey = BRACKET_PATTERN.matcher(formattedKey).replaceAll("");
-                }
-                if (STRIP_ALL_FORMATTING_PATTERN.matcher(formattedKey).find()) {
-                    formattedKey = STRIP_ALL_FORMATTING_PATTERN.matcher(formattedKey).replaceAll("");
-                }
-            }
-
-            return removeRepeatWords(capitalizeWord(formattedKey, caseCheckTimes)).trim();
+        if (isNullOrEmpty(original) || avoid) {
+            return original;
         }
+
+        String formattedKey = original.trim();
+
+        if (containsWhitespace(formattedKey)) {
+            formattedKey = formattedKey.replaceAll("\\s+", " ");
+        }
+
+        if (!skipSymbolReplacement) {
+            formattedKey = formattedKey.replaceAll("_", " ")
+                    .replaceAll("-", " ")
+                    .replaceAll(BRACKET_PATTERN.pattern(), "")
+                    .replaceAll(STRIP_ALL_FORMATTING_PATTERN.pattern(), "");
+        }
+
+        return removeRepeatWords(capitalizeWord(formattedKey, caseCheckTimes)).trim();
     }
 
     /**
@@ -1161,49 +1156,41 @@ public class StringUtils {
      * @return The formatted name/icon key
      */
     public static String formatIdentifier(final String originalId, final boolean formatToId, final boolean avoid) {
-        StringBuilder formattedKey = new StringBuilder(originalId);
-        if (isNullOrEmpty(formattedKey.toString())) {
-            return formattedKey.toString();
+        if (isNullOrEmpty(originalId)) {
+            return originalId;
+        }
+
+        String formattedKey = originalId;
+
+        if (formattedKey.equals("WorldProvider")) {
+            formattedKey = "overworld";
         } else {
-            if (formattedKey.toString().equals("WorldProvider")) {
-                formattedKey = new StringBuilder("overworld");
-            } else if (formattedKey.toString().contains("WorldProvider")) {
-                formattedKey = new StringBuilder(formattedKey.toString().replace("WorldProvider", ""));
-            }
+            formattedKey = formattedKey.replace("WorldProvider", "")
+                    .replace("BiomeGen", "")
+                    .replace("MobSpawner", "")
+                    .replaceAll("\\s+", " ")
+                    .replaceAll("[{}]", "");
 
-            if (formattedKey.toString().contains("BiomeGen")) {
-                formattedKey = new StringBuilder(formattedKey.toString().replace("BiomeGen", ""));
-            }
-            if (formattedKey.toString().contains("MobSpawner")) {
-                formattedKey = new StringBuilder(formattedKey.toString().replace("MobSpawner", ""));
-            }
-
-            if (containsWhitespace(formattedKey.toString())) {
-                formattedKey = new StringBuilder(formattedKey.toString().replaceAll("\\s+", " "));
-            }
-
-            if (formattedKey.toString().contains(":")) {
-                formattedKey = new StringBuilder(formattedKey.toString().split(":", 2)[1]);
-            }
-
-            if (formattedKey.toString().contains("{") || formattedKey.toString().contains("}")) {
-                formattedKey = new StringBuilder(formattedKey.toString().replaceAll("[{}]", ""));
-            }
-
-            if (formattedKey.toString().equalsIgnoreCase("surface")) {
-                formattedKey = new StringBuilder("overworld");
-            } else if (formattedKey.toString().equalsIgnoreCase("hell") || formattedKey.toString().equalsIgnoreCase("nether")) {
-                formattedKey = new StringBuilder("the_nether");
-            } else if (formattedKey.toString().equalsIgnoreCase("end") || formattedKey.toString().equalsIgnoreCase("sky")) {
-                formattedKey = new StringBuilder("the_end");
-            }
-
-            if (formatToId) {
-                return formatAsIcon(formattedKey.toString(), "_");
-            } else {
-                return formatWord(formattedKey.toString(), avoid);
+            if (formattedKey.contains(":")) {
+                formattedKey = formattedKey.split(":", 2)[1];
             }
         }
+
+        switch (formattedKey.toLowerCase()) {
+            case "surface":
+                formattedKey = "overworld";
+                break;
+            case "hell":
+            case "nether":
+                formattedKey = "the_nether";
+                break;
+            case "end":
+            case "sky":
+                formattedKey = "the_end";
+                break;
+        }
+
+        return formatToId ? formatAsIcon(formattedKey, "_") : formatWord(formattedKey, avoid);
     }
 
     /**
