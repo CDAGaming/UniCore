@@ -836,6 +836,8 @@ public class FileUtils {
 
     /**
      * Return whether we have already performed a full class scan through {@link FileUtils#getClassMap()}
+     *
+     * @return {@link Boolean#TRUE} if condition is satisfied
      */
     public static boolean hasScannedClasses() {
         return ARE_CLASSES_SCANNED;
