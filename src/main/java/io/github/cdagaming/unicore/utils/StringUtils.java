@@ -39,6 +39,7 @@ import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1415,6 +1416,52 @@ public class StringUtils {
      */
     public static <T> List<T> newArrayList(final Iterable<T> iterable) {
         return newArrayList(iterable.iterator());
+    }
+
+    /**
+     * Creates a new instance of {@link LinkedHashMap} with the default initial capacity.
+     *
+     * @param <K> the type of keys maintained by the new map
+     * @param <V> the type of mapped values
+     * @return a new instance of {@link LinkedHashMap}
+     */
+    public static <K, V> Map<K, V> newLinkedHashMap() {
+        return new LinkedHashMap<>();
+    }
+
+    /**
+     * Creates a new instance of {@link LinkedHashMap} that contains the same key-value mappings as the input map.
+     *
+     * @param <K> the type of keys maintained by the new map
+     * @param <V> the type of mapped values
+     * @param map the input map whose mappings are to be copied to the new map
+     * @return a new instance of {@link LinkedHashMap} that contains the same key-value mappings as the input map
+     */
+    public static <K, V> Map<K, V> newLinkedHashMap(final Map<? extends K, ? extends V> map) {
+        return new LinkedHashMap<>(map);
+    }
+
+    /**
+     * Creates a new instance of {@link ConcurrentHashMap} with the default initial capacity.
+     *
+     * @param <K> the type of keys maintained by the new map
+     * @param <V> the type of mapped values
+     * @return a new instance of {@link ConcurrentHashMap}
+     */
+    public static <K, V> Map<K, V> newConcurrentHashMap() {
+        return new ConcurrentHashMap<>();
+    }
+
+    /**
+     * Creates a new instance of {@link ConcurrentHashMap} that contains the same key-value mappings as the input map.
+     *
+     * @param <K> the type of keys maintained by the new map
+     * @param <V> the type of mapped values
+     * @param map the input map whose mappings are to be copied to the new map
+     * @return a new instance of {@link ConcurrentHashMap} that contains the same key-value mappings as the input map
+     */
+    public static <K, V> Map<K, V> newConcurrentHashMap(final Map<? extends K, ? extends V> map) {
+        return new ConcurrentHashMap<>(map);
     }
 
     /**
