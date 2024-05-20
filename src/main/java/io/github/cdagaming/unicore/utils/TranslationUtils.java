@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 /**
  * Translation and Localization Utilities based on Language Code
@@ -42,6 +43,7 @@ import java.util.function.Function;
  * @author CDAGaming
  */
 public class TranslationUtils {
+    private static final Pattern JSON_PATTERN = Pattern.compile("(?s)\\\\(.)");
     /**
      * The Stored Mapping of Language Request History
      * <p>
@@ -485,8 +487,8 @@ public class TranslationUtils {
                                     String str1 = splitTranslation[0].substring(1, splitTranslation[0].length() - 1).trim();
                                     String str2 = splitTranslation[1].substring(2, splitTranslation[1].length() - (splitTranslation[1].endsWith(",") ? 2 : 1)).trim();
                                     translationMap.put(
-                                            str1.replaceAll("(?s)\\\\(.)", "$1"),
-                                            str2.replaceAll("(?s)\\\\(.)", "$1")
+                                            StringUtils.replaceMatches(JSON_PATTERN, str1, "$1"),
+                                            StringUtils.replaceMatches(JSON_PATTERN, str2, "$1")
                                     );
                                 } else {
                                     translationMap.put(splitTranslation[0].trim(), splitTranslation[1].trim());
