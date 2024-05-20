@@ -102,11 +102,19 @@ public class StringUtils {
     /**
      * Regex Pattern for Whitespace characters within a string
      */
-    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("(.*?)\\s(.*?)");
+    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
     /**
-     * Regex Pattern for Alphanumeric characters within a string
+     * Regex Pattern for Curly Braces within a string
      */
-    private static final Pattern ALPHANUMERIC_PATTERN = Pattern.compile(".*[a-zA-Z0-9].*");
+    private static final Pattern CURLY_BRACES_PATTERN = Pattern.compile("[{}]");
+    /**
+     * Regex Pattern for Non-Alphanumeric characters within a string
+     */
+    private static final Pattern NON_ALPHANUMERIC_PATTERN = Pattern.compile("[^a-zA-Z0-9_-]");
+    /**
+     * Regex Pattern for valid Color Formats
+     */
+    private static final Pattern COLOR_PATTERN = Pattern.compile("^(?:0x([\\dA-Fa-f]{1,8})|#?([\\dA-Fa-f]{6}([\\dA-Fa-f]{2})?))$");
     /**
      * The list of the currently cached classToStream retrievals
      */
@@ -266,7 +274,7 @@ public class StringUtils {
      * @return {@link Boolean#TRUE} if Entry is classified as a valid Color Code, alongside extra data
      */
     public static Pair<Boolean, Matcher> isValidColor(final String entry) {
-        final Matcher m = Pattern.compile("^(?:0x([\\dA-Fa-f]{1,8})|#?([\\dA-Fa-f]{6}([\\dA-Fa-f]{2})?))$").matcher(entry);
+        final Matcher m = COLOR_PATTERN.matcher(entry);
         return new Pair<>(m.find(), m);
     }
 
@@ -413,217 +421,6 @@ public class StringUtils {
         // reversed by the upper recursive call,
         // add the first value at the end
         list.add(value);
-    }
-
-    /**
-     * Retrieve Match info from an input that matches the defined regex
-     *
-     * @param regexValue The Regex Value to test against
-     * @param original   The original String to get matches from
-     * @param flags      The bit mask for Pattern compilation, see {@link Pattern#compile(String, int)}
-     * @return the processed {@link Matcher} instance
-     */
-    public static Matcher getMatcher(final String regexValue, final String original, final int flags) {
-        return !isNullOrEmpty(original) ? Pattern.compile(regexValue, flags).matcher(original) : null;
-    }
-
-    /**
-     * Retrieve Match info from an input that matches the defined regex
-     *
-     * @param regexValue The Regex Value to test against
-     * @param original   The original String to get matches from
-     * @return the processed {@link Matcher} instance
-     */
-    public static Matcher getMatcher(final String regexValue, final String original) {
-        return getMatcher(regexValue, original, 0);
-    }
-
-    /**
-     * Retrieve Matching Values from an input that matches the defined regex
-     *
-     * @param regexValue The Regex Value to test against
-     * @param original   The original String to get matches from
-     * @param flags      The bit mask for Pattern compilation, see {@link Pattern#compile(String, int)}
-     * @return the list of found matches
-     */
-    public static List<String> getMatches(final String regexValue, final String original, final int flags) {
-        final List<String> matches = newArrayList();
-
-        if (!isNullOrEmpty(original)) {
-            final Matcher m = getMatcher(regexValue, original, flags);
-
-            if (m != null) {
-                while (m.find()) {
-                    matches.add(m.group());
-                }
-            }
-        }
-
-        return matches;
-    }
-
-    /**
-     * Retrieve Matching Values from an input that matches the defined regex
-     *
-     * @param regexValue The Regex Value to test against
-     * @param original   The original String to get matches from
-     * @return the list of found matches
-     */
-    public static List<String> getMatches(final String regexValue, final String original) {
-        return getMatches(regexValue, original, 0);
-    }
-
-    /**
-     * Replace an Amount of Matches from the specified args
-     *
-     * @param regexValue  The Regex Value to test against
-     * @param original    The original String to get matches from
-     * @param replaceWith The value to replace the target with
-     * @param flags       The bit mask for Pattern compilation, see {@link Pattern#compile(String, int)}
-     * @param maxMatches  The maximum amount of matches to remove (Set to -1 to Remove All)
-     * @return The original String from Match Data with the matches up to maxMatches removed
-     */
-    public static String replaceMatches(final String regexValue, final String original, final String replaceWith, final int flags, final int maxMatches) {
-        final Matcher matcher = getMatcher(regexValue, original, flags);
-        final StringBuffer finalString = new StringBuffer();
-
-        if (matcher != null) {
-            int timesLeft = maxMatches;
-            while (matcher.find() && (timesLeft > 0 || timesLeft == -1)) {
-                matcher.appendReplacement(finalString, replaceWith);
-                if (timesLeft > 0) {
-                    timesLeft--;
-                }
-            }
-            matcher.appendTail(finalString);
-        } else {
-            return original;
-        }
-
-        return finalString.toString();
-    }
-
-    /**
-     * Replace an Amount of Matches from the specified args
-     *
-     * @param regexValue  The Regex Value to test against
-     * @param original    The original String to get matches from
-     * @param replaceWith The value to replace the target with
-     * @param flags       The bit mask for Pattern compilation, see {@link Pattern#compile(String, int)}
-     * @return The original String from Match Data with the matches up to maxMatches removed
-     */
-    public static String replaceMatches(final String regexValue, final String original, final String replaceWith, final int flags) {
-        return replaceMatches(regexValue, original, replaceWith, flags, -1);
-    }
-
-    /**
-     * Replace an Amount of Matches from the specified args
-     *
-     * @param regexValue  The Regex Value to test against
-     * @param original    The original String to get matches from
-     * @param replaceWith The value to replace the target with
-     * @return The original String from Match Data with the matches up to maxMatches removed
-     */
-    public static String replaceMatches(final String regexValue, final String original, final String replaceWith) {
-        return replaceMatches(regexValue, original, replaceWith, 0);
-    }
-
-    /**
-     * Remove an Amount of Matches from the specified args
-     *
-     * @param regexValue The Regex Value to test against
-     * @param original   The original String to get matches from
-     * @param flags      The bit mask for Pattern compilation, see {@link Pattern#compile(String, int)}
-     * @param maxMatches The maximum amount of matches to remove (Set to -1 to Remove All)
-     * @return The original String from Match Data with the matches up to maxMatches removed
-     */
-    public static String removeMatches(final String regexValue, final String original, final int flags, final int maxMatches) {
-        return replaceMatches(regexValue, original, "", flags, maxMatches);
-    }
-
-    /**
-     * Remove an Amount of Matches from the specified args
-     *
-     * @param regexValue The Regex Value to test against
-     * @param original   The original String to get matches from
-     * @param flags      The bit mask for Pattern compilation, see {@link Pattern#compile(String, int)}
-     * @return The original String from Match Data with the matches up to maxMatches removed
-     */
-    public static String removeMatches(final String regexValue, final String original, final int flags) {
-        return removeMatches(regexValue, original, flags, -1);
-    }
-
-    /**
-     * Remove an Amount of Matches from the specified args
-     *
-     * @param regexValue The Regex Value to test against
-     * @param original   The original String to get matches from
-     * @return The original String from Match Data with the matches up to maxMatches removed
-     */
-    public static String removeMatches(final String regexValue, final String original) {
-        return removeMatches(regexValue, original, 0);
-    }
-
-    /**
-     * Replaces Data in a String
-     *
-     * @param source          The original String to replace within
-     * @param targetToReplace The value to replace on
-     * @param replaceWith     The value to replace the target with
-     * @param matchCase       Whether to match via exact-capitalization
-     * @param matchWholeWord  Whether to match the whole world
-     * @param useRegex        Whether to allow regex or to escape it
-     * @return The completed and replaced String
-     */
-    public static String replace(final String source, final String targetToReplace, final String replaceWith,
-                                 final boolean matchCase, final boolean matchWholeWord, final boolean useRegex) {
-        if (!isNullOrEmpty(source)) {
-            String patternString;
-            if (useRegex) {
-                patternString = targetToReplace;
-            } else {
-                if (matchWholeWord) {
-                    patternString = "(?i)\\b" + Pattern.quote(targetToReplace) + "\\b";
-                } else {
-                    patternString = Pattern.quote(targetToReplace);
-                }
-            }
-            int flags = Pattern.LITERAL;
-            if (!matchCase) {
-                flags |= Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE;
-            }
-            return replaceMatches(patternString, source, replaceWith, flags, -1);
-        } else {
-            return "";
-        }
-    }
-
-    /**
-     * Replaces Data in a sequential order
-     *
-     * @param source         The original String to replace within
-     * @param matchCase      Whether to match via exact-capitalization
-     * @param matchWholeWord Whether to match the whole world
-     * @param useRegex       Whether to allow regex or to escape it
-     * @param replaceArgs    The replacement list to follow with the form of: targetToReplace:replaceWithValue
-     * @return The completed and replaced String
-     */
-    @SafeVarargs
-    public static String sequentialReplace(final String source, final boolean matchCase, final boolean matchWholeWord, final boolean useRegex, final Map<String, String>... replaceArgs) {
-        if (!isNullOrEmpty(source)) {
-            String finalResult = source;
-
-            for (Map<String, String> replaceData : replaceArgs) {
-                if (!replaceData.isEmpty()) {
-                    for (Map.Entry<String, String> replacementData : replaceData.entrySet()) {
-                        finalResult = replace(finalResult, replacementData.getKey(), replacementData.getValue(), matchCase, matchWholeWord, useRegex);
-                    }
-                }
-            }
-            return finalResult;
-        } else {
-            return "";
-        }
     }
 
     /**
@@ -811,26 +608,6 @@ public class StringUtils {
     }
 
     /**
-     * Whether the specified string contains whitespace characters
-     *
-     * @param original The original String to evaluate
-     * @return the processed result
-     */
-    public static boolean containsWhitespace(final String original) {
-        return isNullOrEmpty(original) || WHITESPACE_PATTERN.matcher(original).find();
-    }
-
-    /**
-     * Whether the specified string contains alphanumeric characters
-     *
-     * @param original The original String to evaluate
-     * @return the processed result
-     */
-    public static boolean containsAlphaNumeric(final String original) {
-        return !isNullOrEmpty(original) && ALPHANUMERIC_PATTERN.matcher(original).find();
-    }
-
-    /**
      * Converts a String into a Valid and Acceptable Camel-Case Format
      *
      * @param original The original String to evaluate
@@ -869,11 +646,9 @@ public class StringUtils {
 
         String formattedKey = original.trim();
 
-        if (containsWhitespace(formattedKey)) {
-            formattedKey = formattedKey.replaceAll("\\s+", whitespaceIndex);
-        }
+        formattedKey = replaceMatches(WHITESPACE_PATTERN, formattedKey, whitespaceIndex);
 
-        formattedKey = formattedKey.replaceAll("[^a-zA-Z0-9_-]", "_").toLowerCase();
+        formattedKey = replaceMatches(NON_ALPHANUMERIC_PATTERN, formattedKey, "_").toLowerCase();
         return formattedKey;
     }
 
@@ -937,8 +712,7 @@ public class StringUtils {
         if (trimmed) {
             return input.replace("-", "");
         } else {
-            final Pattern pattern = (input.contains("-") ? FULL_UUID_PATTERN : TRIMMED_UUID_PATTERN);
-            return pattern.matcher(input).find() ? pattern.matcher(input).replaceFirst("$1-$2-$3-$4-$5") : input;
+            return (input.contains("-") ? FULL_UUID_PATTERN : TRIMMED_UUID_PATTERN).matcher(input).replaceFirst("$1-$2-$3-$4-$5");
         }
     }
 
@@ -1094,15 +868,13 @@ public class StringUtils {
 
         String formattedKey = original.trim();
 
-        if (containsWhitespace(formattedKey)) {
-            formattedKey = formattedKey.replaceAll("\\s+", " ");
-        }
+        formattedKey = normalizeWhitespace(formattedKey);
 
         if (!skipSymbolReplacement) {
-            formattedKey = formattedKey.replaceAll("_", " ")
-                    .replaceAll("-", " ")
-                    .replaceAll(BRACKET_PATTERN.pattern(), "")
-                    .replaceAll(STRIP_ALL_FORMATTING_PATTERN.pattern(), "");
+            formattedKey = formattedKey.replace("_", " ")
+                    .replace("-", " ");
+            formattedKey = stripMatches(BRACKET_PATTERN, formattedKey);
+            formattedKey = stripMatches(STRIP_ALL_FORMATTING_PATTERN, formattedKey);
         }
 
         return removeRepeatWords(capitalizeWord(formattedKey, caseCheckTimes)).trim();
@@ -1168,9 +940,9 @@ public class StringUtils {
         } else {
             formattedKey = formattedKey.replace("WorldProvider", "")
                     .replace("BiomeGen", "")
-                    .replace("MobSpawner", "")
-                    .replaceAll("\\s+", " ")
-                    .replaceAll("[{}]", "");
+                    .replace("MobSpawner", "");
+            formattedKey = normalizeWhitespace(formattedKey);
+            formattedKey = stripMatches(CURLY_BRACES_PATTERN, formattedKey);
 
             if (formattedKey.contains(":")) {
                 formattedKey = formattedKey.split(":", 2)[1];
@@ -1683,6 +1455,22 @@ public class StringUtils {
                 .orElse(null);
     }
 
+    public static String replaceMatches(final Pattern pattern, final String input, final String replacement) {
+        return isNullOrEmpty(input) ? input : pattern.matcher(input).replaceAll(replacement);
+    }
+
+    public static String stripMatches(final Pattern pattern, final String input) {
+        return replaceMatches(pattern, input, "");
+    }
+
+    public static String normalizeWhitespace(final String input) {
+        return replaceMatches(WHITESPACE_PATTERN, input, " ");
+    }
+
+    public static String stripWhitespace(final String input) {
+        return stripMatches(WHITESPACE_PATTERN, input);
+    }
+
     /**
      * Strips Color Codes from the inputted String
      *
@@ -1690,7 +1478,7 @@ public class StringUtils {
      * @return The Stripped and evaluated String
      */
     public static String stripColors(final String input) {
-        return isNullOrEmpty(input) ? input : STRIP_COLOR_PATTERN.matcher(input).replaceAll("");
+        return stripMatches(STRIP_COLOR_PATTERN, input);
     }
 
     /**
@@ -1700,7 +1488,7 @@ public class StringUtils {
      * @return The Stripped and evaluated String
      */
     public static String stripFormatting(final String input) {
-        return isNullOrEmpty(input) ? input : STRIP_FORMATTING_PATTERN.matcher(input).replaceAll("");
+        return stripMatches(STRIP_FORMATTING_PATTERN, input);
     }
 
     /**
@@ -1710,7 +1498,7 @@ public class StringUtils {
      * @return The Stripped and evaluated String
      */
     public static String stripAllFormatting(final String input) {
-        return isNullOrEmpty(input) ? input : STRIP_ALL_FORMATTING_PATTERN.matcher(input).replaceAll("");
+        return stripMatches(STRIP_ALL_FORMATTING_PATTERN, input);
     }
 
     /**
@@ -1720,7 +1508,7 @@ public class StringUtils {
      * @return The Normalized and evaluated String
      */
     public static String normalizeLines(final String input) {
-        return isNullOrEmpty(input) ? input : NEW_LINE_PATTERN.matcher(input).replaceAll("\n");
+        return replaceMatches(NEW_LINE_PATTERN, input, "\n");
     }
 
     /**
