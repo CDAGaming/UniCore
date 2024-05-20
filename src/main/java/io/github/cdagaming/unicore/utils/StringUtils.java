@@ -424,6 +424,27 @@ public class StringUtils {
     }
 
     /**
+     * Retrieve Matching Values from an input that matches the defined regex
+     *
+     * @param pattern The Regex Pattern to test against
+     * @param input   The original String to get matches from
+     * @return the list of found matches
+     */
+    public static List<String> getMatches(final Pattern pattern, final String input) {
+        final List<String> matches = newArrayList();
+
+        if (!isNullOrEmpty(input)) {
+            final Matcher m = pattern.matcher(input);
+
+            while (m.find()) {
+                matches.add(m.group());
+            }
+        }
+
+        return matches;
+    }
+
+    /**
      * Reduces the Length of a String to the Specified Length
      *
      * @param source The String to evaluate

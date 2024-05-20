@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -344,6 +345,38 @@ class StringTests {
         List<String> expected = new ArrayList<>(Collections.singletonList("single"));
         StringUtils.revlist(original);
         assertEquals(expected, original);
+    }
+
+    @Test
+    void testGetMatchesWithValidRegexAndString() {
+        Pattern regexValue = Pattern.compile("\\d+"); // Matches one or more digits
+        String original = "abc123def456";
+        List<String> result = StringUtils.getMatches(regexValue, original);
+        assertArrayEquals(new String[]{"123", "456"}, result.toArray(new String[0]));
+    }
+
+    @Test
+    void testGetMatchesWithNoMatch() {
+        Pattern regexValue = Pattern.compile("xyz"); // No match expected
+        String original = "abc123def456";
+        List<String> result = StringUtils.getMatches(regexValue, original);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testGetMatchesWithEmptyInput() {
+        Pattern regexValue = Pattern.compile("\\d+");
+        List<String> result = StringUtils.getMatches(regexValue, "");
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testGetMatchesWithFlags() {
+        String regexValue = "ABC"; // Case-insensitive match due to flag
+        String original = "abcABC";
+        int flags = Pattern.CASE_INSENSITIVE;
+        List<String> result = StringUtils.getMatches(Pattern.compile(regexValue, flags), original);
+        assertArrayEquals(new String[]{"abc", "ABC"}, result.toArray(new String[0]));
     }
 
     @Test
