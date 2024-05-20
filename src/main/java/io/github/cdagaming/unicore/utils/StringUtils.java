@@ -445,6 +445,25 @@ public class StringUtils {
     }
 
     /**
+     * Retrieve the matching value from an input that matches the defined regex
+     *
+     * @param pattern The Regex Pattern to test against
+     * @param input   The original String to get matches from
+     * @return the found match, or null if no matches were found
+     */
+    public static String getMatch(final Pattern pattern, final String input) {
+        if (!isNullOrEmpty(input)) {
+            final Matcher m = pattern.matcher(input);
+
+            if (m.find()) {
+                return m.group();
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Reduces the Length of a String to the Specified Length
      *
      * @param source The String to evaluate
