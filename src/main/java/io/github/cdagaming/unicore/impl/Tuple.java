@@ -24,6 +24,8 @@
 
 package io.github.cdagaming.unicore.impl;
 
+import java.util.Objects;
+
 /**
  * A Set of Three Objects contained within a Mapping
  *
@@ -208,15 +210,11 @@ public class Tuple<T, U, V> {
             return false;
         }
 
-        Tuple<?, ?, ?> p = (Tuple<?, ?, ?>) obj;
-        try {
-            // Case 1: Attempt ToString Conversion Checking
-            return (this.getFirst().toString().equals(p.getFirst().toString())) && (this.getSecond().toString().equals(p.getSecond().toString())) && this.getThird().toString().equals(p.getThird().toString());
-        } catch (Exception ex) {
-            // Case 2: Automated Checking
-            // Note: Can Likely return false positives depending on conditions
-            return (this.getFirst() == p.getFirst()) && (this.getSecond() == p.getSecond()) && this.getThird() == p.getThird();
-        }
+        Tuple<?, ?, ?> other = (Tuple<?, ?, ?>) obj;
+
+        return Objects.equals(other.getFirst(), getFirst()) &&
+                Objects.equals(other.getSecond(), getSecond()) &&
+                Objects.equals(other.getThird(), getThird());
     }
 
     @Override
@@ -226,6 +224,6 @@ public class Tuple<T, U, V> {
 
     @Override
     public int hashCode() {
-        return toString().hashCode();
+        return Objects.hash(getFirst(), getSecond(), getThird());
     }
 }

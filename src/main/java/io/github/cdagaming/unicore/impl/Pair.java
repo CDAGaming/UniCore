@@ -24,6 +24,8 @@
 
 package io.github.cdagaming.unicore.impl;
 
+import java.util.Objects;
+
 /**
  * A Set of Two Objects contained within a Mapping
  *
@@ -168,15 +170,10 @@ public class Pair<U, V> {
             return false;
         }
 
-        Pair<?, ?> p = (Pair<?, ?>) obj;
-        try {
-            // Case 1: Attempt ToString Conversion Checking
-            return (this.getFirst().toString().equals(p.getFirst().toString())) && (this.getSecond().toString().equals(p.getSecond().toString()));
-        } catch (Exception ex) {
-            // Case 2: Automated Checking
-            // Note: Can Likely return false positives depending on conditions
-            return (this.getFirst() == p.getFirst()) && (this.getSecond() == p.getSecond());
-        }
+        Pair<?, ?> other = (Pair<?, ?>) obj;
+
+        return Objects.equals(other.getFirst(), getFirst()) &&
+                Objects.equals(other.getSecond(), getSecond());
     }
 
     @Override
@@ -186,6 +183,6 @@ public class Pair<U, V> {
 
     @Override
     public int hashCode() {
-        return toString().hashCode();
+        return Objects.hash(getFirst(), getSecond());
     }
 }
