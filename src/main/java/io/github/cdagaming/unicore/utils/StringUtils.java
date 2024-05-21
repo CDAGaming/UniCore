@@ -1241,7 +1241,9 @@ public class StringUtils {
      */
     @SafeVarargs
     public static <T> List<T> newArrayList(final T... elements) {
-        return new ArrayList<>(Arrays.asList(elements));
+        final List<T> data = newArrayList();
+        Collections.addAll(data, elements);
+        return data;
     }
 
     /**
@@ -1262,7 +1264,7 @@ public class StringUtils {
      * @return a new ArrayList containing the specified elements
      */
     public static <T> List<T> newArrayList(final Iterator<T> iterator) {
-        final List<T> list = new ArrayList<>();
+        final List<T> list = newArrayList();
         while (iterator.hasNext()) {
             list.add(iterator.next());
         }

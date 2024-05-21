@@ -31,9 +31,6 @@ import org.junit.jupiter.api.Test;
 
 import java.awt.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -320,15 +317,15 @@ class StringTests {
 
     @Test
     void testRevlistWithNonEmptyList() {
-        List<Integer> original = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
-        List<Integer> expected = new ArrayList<>(Arrays.asList(5, 4, 3, 2, 1));
+        List<Integer> original = StringUtils.newArrayList(1, 2, 3, 4, 5);
+        List<Integer> expected = StringUtils.newArrayList(5, 4, 3, 2, 1);
         StringUtils.revlist(original);
         assertEquals(expected, original);
     }
 
     @Test
     void testRevlistWithEmptyList() {
-        List<Object> original = new ArrayList<>();
+        List<Object> original = StringUtils.newArrayList();
         StringUtils.revlist(original);
         assertTrue(original.isEmpty());
     }
@@ -341,8 +338,8 @@ class StringTests {
 
     @Test
     void testRevlistWithSingleElement() {
-        List<String> original = new ArrayList<>(Collections.singletonList("single"));
-        List<String> expected = new ArrayList<>(Collections.singletonList("single"));
+        List<String> original = StringUtils.newArrayList("single");
+        List<String> expected = StringUtils.newArrayList("single");
         StringUtils.revlist(original);
         assertEquals(expected, original);
     }
