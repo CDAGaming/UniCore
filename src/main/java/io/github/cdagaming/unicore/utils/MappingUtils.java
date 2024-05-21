@@ -30,7 +30,6 @@ import io.github.classgraph.ClassInfo;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiPredicate;
@@ -117,7 +116,7 @@ public class MappingUtils {
      * @return the resulting list of unmapped class names
      */
     public static Set<String> getUnmappedClassesMatching(String start, BiPredicate<String, String> matchCondition) {
-        final Set<String> matches = new HashSet<>();
+        final Set<String> matches = StringUtils.newHashSet();
         if (areMappingsLoaded()) {
             for (Map.Entry<String, String> entry : classMap.entrySet()) {
                 if (matchCondition.test(entry.getValue(), start)) {

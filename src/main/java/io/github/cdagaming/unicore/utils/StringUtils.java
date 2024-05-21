@@ -1183,6 +1183,56 @@ public class StringUtils {
     }
 
     /**
+     * Creates a new HashSet containing the specified elements.
+     *
+     * @param elements the elements to include in the new HashSet
+     * @param <T>      the type of elements in the list
+     * @return a new HashSet containing the specified elements
+     */
+    @SafeVarargs
+    public static <T> Set<T> newHashSet(final T... elements) {
+        final Set<T> data = newHashSet();
+        Collections.addAll(data, elements);
+        return data;
+    }
+
+    /**
+     * Creates a new HashSet containing the specified elements.
+     *
+     * @param <T> the type of elements in the list
+     * @return a new HashSet containing the specified elements
+     */
+    public static <T> Set<T> newHashSet() {
+        return new HashSet<>();
+    }
+
+    /**
+     * Creates a new HashSet containing the specified elements.
+     *
+     * @param iterator the elements to include in the new HashSet
+     * @param <T>      the type of elements in the list
+     * @return a new HashSet containing the specified elements
+     */
+    public static <T> Set<T> newHashSet(final Iterator<T> iterator) {
+        final Set<T> set = newHashSet();
+        while (iterator.hasNext()) {
+            set.add(iterator.next());
+        }
+        return set;
+    }
+
+    /**
+     * Creates a new HashSet containing the specified elements.
+     *
+     * @param iterable the elements to include in the new HashSet
+     * @param <T>      the type of elements in the list
+     * @return a new HashSet containing the specified elements
+     */
+    public static <T> Set<T> newHashSet(final Iterable<T> iterable) {
+        return newHashSet(iterable.iterator());
+    }
+
+    /**
      * Creates a new ArrayList containing the specified elements.
      *
      * @param elements the elements to include in the new ArrayList

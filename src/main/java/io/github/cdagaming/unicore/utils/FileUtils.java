@@ -607,7 +607,7 @@ public class FileUtils {
         final String superClassName = MappingUtils.getCanonicalName(superClass);
 
         // To track visited classes to prevent cycles and redundant checks
-        final Set<ClassInfo> visitedClasses = new HashSet<>();
+        final Set<ClassInfo> visitedClasses = StringUtils.newHashSet();
 
         // Stack to simulate the recursion
         final Deque<ClassInfo> stack = new ArrayDeque<>();
