@@ -40,6 +40,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1384,6 +1385,41 @@ public class StringUtils {
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> newTreeMap(final Map<? extends K, ? extends V> map) {
         return new TreeMap<>(map);
+    }
+
+    /**
+     * Creates a new instance of {@link ConcurrentSkipListMap} that uses the natural ordering of its keys.
+     *
+     * @param <K> the type of keys maintained by the new map
+     * @param <V> the type of mapped values
+     * @return a new instance of {@link ConcurrentSkipListMap}
+     */
+    public static <K extends Comparable<? super K>, V> ConcurrentSkipListMap<K, V> newConcurrentMap() {
+        return new ConcurrentSkipListMap<>();
+    }
+
+    /**
+     * Creates a new instance of {@link ConcurrentSkipListMap} that uses the specified comparator to order its keys.
+     *
+     * @param <K>        the type of keys maintained by the new map
+     * @param <V>        the type of mapped values
+     * @param comparator the comparator to use for ordering the keys
+     * @return a new instance of {@link ConcurrentSkipListMap}
+     */
+    public static <K, V> ConcurrentSkipListMap<K, V> newConcurrentMap(final Comparator<? super K> comparator) {
+        return new ConcurrentSkipListMap<>(comparator);
+    }
+
+    /**
+     * Creates a new instance of {@link ConcurrentSkipListMap} that contains the same key-value mappings as the input map.
+     *
+     * @param <K> the type of keys maintained by the new map
+     * @param <V> the type of mapped values
+     * @param map the input map whose mappings are to be copied to the new map
+     * @return a new instance of {@link ConcurrentSkipListMap} that contains the same key-value mappings as the input map
+     */
+    public static <K extends Comparable<? super K>, V> ConcurrentSkipListMap<K, V> newConcurrentMap(final Map<? extends K, ? extends V> map) {
+        return new ConcurrentSkipListMap<>(map);
     }
 
     /**
