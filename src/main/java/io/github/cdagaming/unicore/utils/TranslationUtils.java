@@ -25,7 +25,6 @@
 package io.github.cdagaming.unicore.utils;
 
 import io.github.cdagaming.unicore.UniCore;
-import io.github.cdagaming.unicore.impl.TriFunction;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -33,6 +32,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -85,9 +85,9 @@ public class TranslationUtils {
     /**
      * The function to use when retrieving additional {@link InputStream} data for resources
      * <p>
-     * Function: [modId, assetsPath, langPath] => List of {@link InputStream} instances
+     * Function: [instance, langPath] => List of {@link InputStream} instances
      */
-    private TriFunction<String, String, String, List<InputStream>> resourceSupplier = (id, assetsPath, langPath) -> StringUtils.newArrayList();
+    private BiFunction<TranslationUtils, String, List<InputStream>> resourceSupplier = (instance, langPath) -> StringUtils.newArrayList();
     /**
      * The function to use when retrieving the current language to use
      * <p>
@@ -309,7 +309,7 @@ public class TranslationUtils {
      * @param resourceSupplier the new resource-supplying function
      * @return the current instance, used for chain-building
      */
-    public TranslationUtils setResourceSupplier(final TriFunction<String, String, String, List<InputStream>> resourceSupplier) {
+    public TranslationUtils setResourceSupplier(final BiFunction<TranslationUtils, String, List<InputStream>> resourceSupplier) {
         this.resourceSupplier = resourceSupplier;
         return this;
     }
@@ -321,7 +321,7 @@ public class TranslationUtils {
      * @return the current instance, used for chain-building
      */
     public TranslationUtils setResourceSupplier(final List<InputStream> resourceSupplier) {
-        this.resourceSupplier = (id, assetsPath, langPath) -> resourceSupplier;
+        this.resourceSupplier = (instance, langPath) -> resourceSupplier;
         return this;
     }
 
@@ -413,6 +413,15 @@ public class TranslationUtils {
     }
 
     /**
+     * Retrieve the active assets path
+     *
+     * @return the active assets path
+     */
+    public String getAssetsPath() {
+        return usingAssetsPath ? String.format("/assets/%s/", getModId()) : "/";
+    }
+
+    /**
      * Fetches a list of valid {@link InputStream}'s that can be used for the specified language
      *
      * @param languageId The language ID to interpret
@@ -420,7 +429,7 @@ public class TranslationUtils {
      * @return the interpreted list of valid {@link InputStream}'s
      */
     private List<InputStream> getLocaleStreamsFrom(final String languageId, final String ext) {
-        final String assetsPath = usingAssetsPath ? String.format("/assets/%s/", getModId()) : "/";
+        final String assetsPath = getAssetsPath();
         final String langPath = String.format("lang/%s.%s", languageId, ext);
         final List<InputStream> results = StringUtils.newArrayList();
 
@@ -428,7 +437,7 @@ public class TranslationUtils {
         if (local != null) {
             results.add(local);
         }
-        results.addAll(resourceSupplier.apply(getModId(), assetsPath, langPath));
+        results.addAll(resourceSupplier.apply(this, langPath));
         return results;
     }
 
