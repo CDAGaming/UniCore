@@ -251,8 +251,7 @@ public class StringUtils {
                     startColor
             );
         } else if (startColorObj instanceof Number) {
-            final long startObj = ((Number) startColorObj).longValue();
-            startColor = getColorFrom(startObj);
+            startColor = getColorFrom(((Number) startColorObj).longValue());
             endColor = endColorObj instanceof Number ? getColorFrom(
                     ((Number) endColorObj).longValue()
             ) : startColor;
