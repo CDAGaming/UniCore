@@ -100,6 +100,11 @@ class StringTests {
         colors = StringUtils.findColor("#FF0000", "invalid"); // Red to Red
         assertEquals(Color.red, colors.getFirst());
         assertEquals(Color.red, colors.getSecond());
+
+        // Test with valid start and end integer colors
+        colors = StringUtils.findColor(-8355712, -16777216);
+        assertEquals(new Color(128, 128, 128), colors.getFirst());
+        assertEquals(new Color(0, 0, 0), colors.getSecond());
     }
 
     @Test
