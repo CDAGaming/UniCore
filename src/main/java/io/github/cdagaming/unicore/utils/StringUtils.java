@@ -236,22 +236,34 @@ public class StringUtils {
     /**
      * Attempt to retrieve color info for the specified entries
      *
-     * @param startColorObj The Starting Color Object (Fallback: {@link Color#WHITE} if invalid)
+     * @param startColorObj The Starting Color Object
      * @param endColorObj   The Ending Color Object (Returns startColor if null or invalid)
+     * @param fallbackColor The fallback color, if starting color is null or invalid
      * @return the processed output
      */
-    public static Pair<Color, Color> findColor(final Object startColorObj, final Object endColorObj) {
-        final Color startColor = getColorFrom(startColorObj);
+    public static Pair<Color, Color> findColor(final Object startColorObj, final Object endColorObj, final Color fallbackColor) {
+        final Color startColor = getColorFrom(startColorObj, fallbackColor);
         final Color endColor = getColorFrom(endColorObj, null);
         return new Pair<>(startColor, getOrDefault(endColor, startColor));
     }
 
     /**
      * Attempt to retrieve color info for the specified entries
-     * <p>Returns {@link Color#WHITE} if start color is null or invalid
+     *
+     * @param startColorObj The Starting Color Object (Fallback: {@link Color#white} if invalid)
+     * @param endColorObj   The Ending Color Object (Returns startColor if null or invalid)
+     * @return the processed output
+     */
+    public static Pair<Color, Color> findColor(final Object startColorObj, final Object endColorObj) {
+        return findColor(startColorObj, endColorObj, Color.white);
+    }
+
+    /**
+     * Attempt to retrieve color info for the specified entries
+     * <p>Returns {@link Color#white} if start color is null or invalid
      *
      * @param startColorObj The Starting Color Object
-     * @return the processed output, or {@link Color#WHITE} if null or invalid
+     * @return the processed output, or {@link Color#white} if null or invalid
      */
     public static Color findColor(final Object startColorObj) {
         return getColorFrom(startColorObj);
@@ -259,7 +271,7 @@ public class StringUtils {
 
     /**
      * Attempt to retrieve color info for the specified entries
-     * <p>Returns {@link Color#WHITE} if start color is null or invalid
+     * <p>Returns {@link Color#white} if start color is null or invalid
      *
      * @param startColorObj The Starting Color Object
      * @param fallback      The fallback color, if null or invalid
@@ -278,10 +290,10 @@ public class StringUtils {
 
     /**
      * Attempt to retrieve color info for the specified entries
-     * <p>Returns {@link Color#WHITE} if start color is null or invalid
+     * <p>Returns {@link Color#white} if start color is null or invalid
      *
      * @param startColorObj The Starting Color Object
-     * @return the processed output, or {@link Color#WHITE} if null or invalid
+     * @return the processed output, or {@link Color#white} if null or invalid
      */
     public static Color getColorFrom(final Object startColorObj) {
         return getColorFrom(startColorObj, Color.white);
