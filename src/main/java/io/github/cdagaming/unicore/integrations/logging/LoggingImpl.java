@@ -39,12 +39,6 @@ public abstract class LoggingImpl {
      */
     private final String loggerName;
     /**
-     * Whether to append the logger name to the message
-     * <p>
-     * INTERNAL USAGE ONLY
-     */
-    boolean appendName;
-    /**
      * Whether this Logger is operating in Debug Mode
      */
     private boolean debugMode;
@@ -54,22 +48,10 @@ public abstract class LoggingImpl {
      *
      * @param loggerName The name of the Logger
      * @param debug      Whether to initialize the logger in debug mode
-     * @param appendName Whether to append the logger name to the message
-     */
-    public LoggingImpl(final String loggerName, final boolean debug, final boolean appendName) {
-        this.loggerName = loggerName;
-        this.debugMode = debug;
-        this.appendName = appendName;
-    }
-
-    /**
-     * Initializes a new Logger
-     *
-     * @param loggerName The name of the Logger
-     * @param debug      Whether to initialize the logger in debug mode
      */
     public LoggingImpl(final String loggerName, final boolean debug) {
-        this(loggerName, debug, false);
+        this.loggerName = loggerName;
+        this.debugMode = debug;
     }
 
     /**
@@ -79,6 +61,15 @@ public abstract class LoggingImpl {
      */
     public LoggingImpl(final String loggerName) {
         this(loggerName, false);
+    }
+
+    /**
+     * Retrieve the name of the logger
+     *
+     * @return the name of the logger
+     */
+    public String getLoggerName() {
+        return loggerName;
     }
 
     /**
@@ -280,6 +271,15 @@ public abstract class LoggingImpl {
     }
 
     /**
+     * Retrieve the prefix to be displayed before logged messages
+     *
+     * @return the logging prefix, if any
+     */
+    public String getPrefix() {
+        return "";
+    }
+
+    /**
      * Parse the specified message for Log Messages
      *
      * @param message The message to interpret
@@ -287,8 +287,7 @@ public abstract class LoggingImpl {
      * @return the formatted message
      */
     public String parse(final String message, Object... args) {
-        final String prefix = appendName ? (loggerName + ": ") : "";
-        return prefix + StringUtils.normalize(
+        return getPrefix() + StringUtils.normalize(
                 String.format(message, args)
         );
     }

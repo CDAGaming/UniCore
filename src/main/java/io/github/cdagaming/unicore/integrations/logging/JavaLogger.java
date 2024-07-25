@@ -25,7 +25,6 @@
 package io.github.cdagaming.unicore.integrations.logging;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.github.cdagaming.unicore.utils.FileUtils;
 
 import java.util.logging.Logger;
 
@@ -49,17 +48,7 @@ public class JavaLogger extends LoggingImpl {
      */
     public JavaLogger(final String loggerName, final boolean debug) {
         super(loggerName, debug);
-
-        Logger logger = null;
-        try {
-            logger = (Logger) FileUtils.loadClass("net.minecraft.src.ModLoader", "ModLoader")
-                    .getDeclaredMethod("getLogger").invoke(null);
-            if (logger != null) {
-                this.appendName = true;
-            }
-        } catch (Throwable ignored) {
-        }
-        this.logInstance = logger != null ? logger : Logger.getLogger(loggerName);
+        this.logInstance = Logger.getLogger(loggerName);
     }
 
     /**
