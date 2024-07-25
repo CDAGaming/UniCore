@@ -243,7 +243,7 @@ public class StringUtils {
     public static Pair<Color, Color> findColor(final Object startColorObj, final Object endColorObj) {
         final Color startColor = getColorFrom(startColorObj);
         final Color endColor = getColorFrom(endColorObj, null);
-        return new Pair<>(startColor, endColor != null ? endColor : startColor);
+        return new Pair<>(startColor, getOrDefault(endColor, startColor));
     }
 
     /**
@@ -388,15 +388,39 @@ public class StringUtils {
     }
 
     /**
-     * Retrieve the primary value if non-empty; Otherwise, use the secondary value
+     * Retrieve the primary value if it satisfies the condition; Otherwise, use the secondary value
      *
      * @param primary   The primary value to interpret
      * @param secondary The secondary value to interpret
      * @param condition The conditional statement to interpret
+     * @param <T>       The type of the values
      * @return the resulting value
      */
-    public static String getOrDefault(final String primary, final String secondary, final Predicate<String> condition) {
+    public static <T> T getOrDefault(final T primary, final T secondary, final Predicate<T> condition) {
         return condition.test(primary) ? primary : secondary;
+    }
+
+    /**
+     * Retrieve the primary value if it is non-null; Otherwise, use the secondary value
+     *
+     * @param primary   The primary value to interpret
+     * @param secondary The secondary value to interpret
+     * @param <T>       The type of the values
+     * @return the resulting value
+     */
+    public static <T> T getOrDefault(final T primary, final T secondary) {
+        return getOrDefault(primary, secondary, Objects::nonNull);
+    }
+
+    /**
+     * Retrieve the primary value if it is non-null; Otherwise, use the secondary value
+     *
+     * @param primary The primary value to interpret
+     * @param <T>     The type of the value
+     * @return the resulting value
+     */
+    public static <T> T getOrDefault(final T primary) {
+        return getOrDefault(primary, null);
     }
 
     /**
