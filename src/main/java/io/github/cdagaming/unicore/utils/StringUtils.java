@@ -235,42 +235,56 @@ public class StringUtils {
 
     /**
      * Attempt to retrieve color info for the specified entries
-     * <p>Returns {@link Color#WHITE} if start color is invalid (Type-dependent)
      *
-     * @param startColorObj The Starting Color Object (Default: {@link Color#WHITE})
+     * @param startColorObj The Starting Color Object (Fallback: {@link Color#WHITE} if invalid)
      * @param endColorObj   The Ending Color Object (Returns startColor if null or invalid)
      * @return the processed output
      */
     public static Pair<Color, Color> findColor(final Object startColorObj, final Object endColorObj) {
-        Color startColor = null, endColor = null;
-
-        if (startColorObj instanceof String) {
-            startColor = getColorFrom((String) startColorObj);
-            endColor = getColorFrom(
-                    endColorObj instanceof String ? (String) endColorObj : (String) startColorObj,
-                    startColor
-            );
-        } else if (startColorObj instanceof Number) {
-            startColor = getColorFrom(((Number) startColorObj).longValue());
-            endColor = endColorObj instanceof Number ? getColorFrom(
-                    ((Number) endColorObj).longValue()
-            ) : startColor;
-        } else if (startColorObj instanceof Color) {
-            startColor = (Color) startColorObj;
-            endColor = endColorObj instanceof Color ? (Color) endColorObj : startColor;
-        }
+        final Color startColor = getColorFrom(startColorObj);
+        final Color endColor = getColorFrom(endColorObj, null);
         return new Pair<>(startColor, endColor != null ? endColor : startColor);
     }
 
     /**
      * Attempt to retrieve color info for the specified entries
-     * <p>Returns {@link Color#WHITE} if start color is invalid (Type-dependent)
+     * <p>Returns {@link Color#WHITE} if start color is null or invalid
      *
-     * @param startColorObj The Starting Color Object (Default: {@link Color#WHITE})
-     * @return the processed output
+     * @param startColorObj The Starting Color Object
+     * @return the processed output, or {@link Color#WHITE} if null or invalid
      */
     public static Color findColor(final Object startColorObj) {
-        return findColor(startColorObj, null).getFirst();
+        return getColorFrom(startColorObj);
+    }
+
+    /**
+     * Attempt to retrieve color info for the specified entries
+     * <p>Returns {@link Color#WHITE} if start color is null or invalid
+     *
+     * @param startColorObj The Starting Color Object
+     * @param fallback      The fallback color, if null or invalid
+     * @return the processed output, or the fallback color if null or invalid
+     */
+    public static Color getColorFrom(final Object startColorObj, final Color fallback) {
+        if (startColorObj instanceof String) {
+            return getColorFrom((String) startColorObj, fallback);
+        } else if (startColorObj instanceof Number) {
+            return getColorFrom(((Number) startColorObj).longValue());
+        } else if (startColorObj instanceof Color) {
+            return (Color) startColorObj;
+        }
+        return fallback;
+    }
+
+    /**
+     * Attempt to retrieve color info for the specified entries
+     * <p>Returns {@link Color#WHITE} if start color is null or invalid
+     *
+     * @param startColorObj The Starting Color Object
+     * @return the processed output, or {@link Color#WHITE} if null or invalid
+     */
+    public static Color getColorFrom(final Object startColorObj) {
+        return getColorFrom(startColorObj, Color.white);
     }
 
     /**
