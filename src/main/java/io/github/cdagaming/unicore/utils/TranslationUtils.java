@@ -462,7 +462,8 @@ public class TranslationUtils {
     /**
      * Apply Translation Deprecations to a given translation map
      *
-     * @param map The translations map to process
+     * @param map      The translations map to process
+     * @param encoding The Charset Encoding (Default: UTF-8)
      */
     public void applyDeprecations(final Map<String, String> map, final String encoding) {
         if (!checkDeprecations) return;
