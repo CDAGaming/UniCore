@@ -24,6 +24,8 @@
 
 package io.github.cdagaming.unicore.utils;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.github.cdagaming.unicore.UniCore;
 
 import java.io.BufferedReader;
@@ -51,6 +53,14 @@ public class TranslationUtils {
      */
     private final Map<String, Map<String, String>> requestMap = StringUtils.newHashMap();
     /**
+     * The list of removed translations, if any
+     */
+    private final List<String> removed = StringUtils.newArrayList();
+    /**
+     * The list of renamed translations, if any
+     */
+    private final Map<String, String> renamed = StringUtils.newHashMap();
+    /**
      * The default/fallback Language ID to Locate and Retrieve Translations
      */
     private String defaultLanguageId = "en_us";
@@ -66,6 +76,10 @@ public class TranslationUtils {
      * The Charset Encoding to parse translations in
      */
     private String encoding;
+    /**
+     * If this module should check for deprecated data
+     */
+    private boolean checkDeprecations = true;
     /**
      * If using a .Json or .Lang Language File
      */
@@ -102,6 +116,10 @@ public class TranslationUtils {
      * If this module needs a full sync
      */
     private boolean needsSync;
+    /**
+     * If this module has checked for internal deprecations
+     */
+    private boolean checkedDeprecations = false;
 
     /**
      * Sets initial Data and Retrieves Valid Translations
@@ -370,6 +388,17 @@ public class TranslationUtils {
     }
 
     /**
+     * Toggles whether this module should check for deprecated data
+     *
+     * @param checkDeprecations Toggles whether this module should check for deprecated data
+     * @return the current instance, for chain-building
+     */
+    public TranslationUtils setCheckDeprecations(final boolean checkDeprecations) {
+        this.checkDeprecations = checkDeprecations;
+        return this;
+    }
+
+    /**
      * Sets the Language ID to Retrieve Translations for, if present
      *
      * @param languageId The Language ID (Default: en_US)
@@ -419,6 +448,65 @@ public class TranslationUtils {
      */
     public String getAssetsPath() {
         return usingAssetsPath ? String.format("/assets/%s/", getModId()) : "/";
+    }
+
+    /**
+     * Retrieve the active deprecations path
+     *
+     * @return the active deprecations path
+     */
+    public String getDeprecatedPath() {
+        return getAssetsPath() + "lang/deprecated.json";
+    }
+
+    /**
+     * Apply Translation Deprecations to a given translation map
+     *
+     * @param map The translations map to process
+     */
+    public void applyDeprecations(final Map<String, String> map, final String encoding) {
+        if (!checkDeprecations) return;
+
+        if (!checkedDeprecations) {
+            final InputStream local = FileUtils.getResourceAsStream(TranslationUtils.class, getDeprecatedPath());
+            if (local != null) {
+                try (InputStreamReader reader = new InputStreamReader(local, Charset.forName(encoding))) {
+                    final JsonElement element = FileUtils.parseJson(reader);
+                    if (element != null && element.isJsonObject()) {
+                        final JsonObject obj = element.getAsJsonObject();
+
+                        for (JsonElement section : obj.getAsJsonArray("removed")) {
+                            removed.add(section.getAsString());
+                        }
+                        for (Map.Entry<String, JsonElement> entry : obj.getAsJsonObject("renamed").entrySet()) {
+                            renamed.put(entry.getKey(), entry.getValue().getAsString());
+                        }
+                    }
+                    local.close();
+                } catch (Exception ex) {
+                    UniCore.LOG.error("An exception has occurred while parsing deprecated Translation data, aborting scan and clearing data to prevent issues...");
+                    UniCore.LOG.debugError(ex);
+
+                    removed.clear();
+                    renamed.clear();
+                }
+            }
+            checkedDeprecations = true;
+        }
+
+        for (String data : removed) {
+            map.remove(data);
+        }
+
+        renamed.forEach((oldKey, newKey) -> {
+            final String oldValue = map.remove(oldKey);
+            if (oldValue == null) {
+                UniCore.LOG.warn("Missing translation key for rename: " + oldKey);
+                map.remove(newKey);
+            } else {
+                map.put(newKey, oldValue);
+            }
+        });
     }
 
     /**
@@ -527,6 +615,7 @@ public class TranslationUtils {
             requestMap.put(languageId, translationMap);
             setLanguage(defaultLanguageId);
         } else {
+            applyDeprecations(translationMap, encoding);
             UniCore.LOG.debugInfo((hadBefore ? "Refreshed" : "Added") + " translations for " + getModId() + " for " + languageId);
             requestMap.put(languageId, translationMap);
         }
