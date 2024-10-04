@@ -65,7 +65,7 @@ dependencies {
     implementation group: 'net.lenni0451', name: 'Reflect', version: "${reflect_version}"
     implementation group: 'io.github.classgraph', name: 'classgraph', version: "${classgraph_version}"
 
-    testImplementation "org.junit.jupiter:junit-jupiter:5.10.3"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.11.1"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
     testRuntimeOnly "org.slf4j:slf4j-simple:${slf4j_version}"
 }
