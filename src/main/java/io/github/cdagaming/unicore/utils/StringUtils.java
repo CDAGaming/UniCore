@@ -613,9 +613,11 @@ public class StringUtils {
                 finalSet.setFirst(true);
             } catch (Exception ex) {
                 finalSet.setFirst(false);
+                finalSet.setSecond(0);
             }
         } else {
             finalSet.setFirst(false);
+            finalSet.setSecond(0);
         }
 
         return finalSet;
@@ -646,9 +648,11 @@ public class StringUtils {
                 finalSet.setFirst(true);
             } catch (Exception ex) {
                 finalSet.setFirst(false);
+                finalSet.setSecond(0L);
             }
         } else {
             finalSet.setFirst(false);
+            finalSet.setSecond(0L);
         }
 
         return finalSet;
@@ -679,9 +683,11 @@ public class StringUtils {
                 finalSet.setFirst(true);
             } catch (Exception ex) {
                 finalSet.setFirst(false);
+                finalSet.setSecond(false);
             }
         } else {
             finalSet.setFirst(false);
+            finalSet.setSecond(false);
         }
 
         return finalSet;
