@@ -1613,7 +1613,7 @@ public class StringUtils {
      * @return The Found Field Data, if any
      */
     public static Object getField(final Class<?> classToAccess, final Object instance, final String... fieldNames) {
-        return getValidField(classToAccess, fieldNames).map(f -> f.get(instance)).orElse(null);
+        return getValidField(classToAccess, fieldNames).map(f -> (instance == null ? f.get() : f.get(instance))).orElse(null);
     }
 
     /**
@@ -1625,7 +1625,13 @@ public class StringUtils {
      * @param fieldNames    A List of Field Names to search for
      */
     public static void updateField(final Class<?> classToAccess, final Object instance, final Object value, final String... fieldNames) {
-        getValidField(classToAccess, fieldNames).ifPresent(fieldWrapper -> fieldWrapper.set(instance, value));
+        getValidField(classToAccess, fieldNames).ifPresent(fieldWrapper -> {
+            if (instance == null) {
+                fieldWrapper.set(value);
+            } else {
+                fieldWrapper.set(instance, value);
+            }
+        });
     }
 
     /**
@@ -1640,7 +1646,7 @@ public class StringUtils {
      */
     public static Object executeMethod(final Class<?> classToAccess, final Object instance, final Class<?>[] parameterTypes, final Object[] parameters, final String... methodNames) {
         return getValidMethod(classToAccess, parameterTypes, methodNames)
-                .map(methodWrapper -> methodWrapper.invokeInstance(instance, parameters))
+                .map(methodWrapper -> (instance == null ? methodWrapper.invokeArgs(parameters) : methodWrapper.invokeInstance(instance, parameters)))
                 .orElse(null);
     }
 
