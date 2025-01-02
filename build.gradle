@@ -65,7 +65,7 @@ dependencies {
     implementation group: 'net.lenni0451', name: 'Reflect', version: "${reflect_version}"
     implementation group: 'io.github.classgraph', name: 'classgraph', version: "${classgraph_version}"
 
-    testImplementation "org.junit.jupiter:junit-jupiter:5.11.3"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.11.4"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
     testRuntimeOnly "org.slf4j:slf4j-simple:${slf4j_version}"
 }
@@ -75,7 +75,7 @@ test {
     testLogging {
         events "passed", "skipped", "failed"
     }
-    maxParallelForks Runtime.runtime.availableProcessors()
+    maxParallelForks = Runtime.runtime.availableProcessors()
 }
 
 [jar].each {
