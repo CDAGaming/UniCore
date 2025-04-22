@@ -933,6 +933,11 @@ public class FileUtils {
         return StringUtils.newHashMap(CLASS_MAP);
     }
 
+    /**
+     * Clears the list of currently detected class names
+     *
+     * @param allowReScan Whether to allow further re-scans to occur
+     */
     public static void clearClassMap(final boolean allowReScan) {
         if (allowReScan) {
             ARE_CLASSES_SCANNED = false;
@@ -940,8 +945,18 @@ public class FileUtils {
         CLASS_MAP.clear();
     }
 
+    /**
+     * Clears the list of currently detected class names
+     */
     public static void clearClassMap() {
         clearClassMap(false);
+    }
+
+    /**
+     * Clears the list of currently cached class nameToObject retrievals
+     */
+    public static void clearClassCache() {
+        CLASS_CACHE.clear();
     }
 
     /**
