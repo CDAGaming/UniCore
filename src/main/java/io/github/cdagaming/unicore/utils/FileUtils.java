@@ -85,6 +85,11 @@ public class FileUtils {
      * Whether functions utilizing ClassGraph are enabled
      */
     private static boolean CLASS_GRAPH_ENABLED = true;
+    /**
+     * Whether to use the local classloader in certain operations<p>
+     * Note: This can both break and fix several functionalities in this class
+     */
+    private static boolean USE_CLASS_LOADER = OSUtils.JAVA_SPEC < 16.0F;
 
     /**
      * Shutdown the specified Thread Factories
@@ -812,7 +817,7 @@ public class FileUtils {
      * @return the valid {@link Class} or null
      */
     public static Class<?> findClass(final String... paths) {
-        return findClass(OSUtils.JAVA_SPEC < 16, paths);
+        return findClass(isUsingClassloader(), paths);
     }
 
     /**
@@ -822,7 +827,7 @@ public class FileUtils {
      * @return the valid {@link Class} or null
      */
     public static Class<?> loadClass(final String... paths) {
-        return loadClass(OSUtils.JAVA_SPEC < 16, paths);
+        return loadClass(isUsingClassloader(), paths);
     }
 
     /**
@@ -841,6 +846,24 @@ public class FileUtils {
      */
     public static boolean hasScannedClasses() {
         return ARE_CLASSES_SCANNED;
+    }
+
+    /**
+     * Return whether the local class loader is being used
+     *
+     * @return {@link Boolean#TRUE} if condition is satisfied
+     */
+    public static boolean isUsingClassloader() {
+        return USE_CLASS_LOADER;
+    }
+
+    /**
+     * Sets whether the local class loader is being used
+     *
+     * @param useClassloader if the local class loader is being used
+     */
+    public static void setUsingClassloader(final boolean useClassloader) {
+        USE_CLASS_LOADER = useClassloader;
     }
 
     /**
@@ -887,7 +910,7 @@ public class FileUtils {
                             "*.mixin.*", "*.mixins.*", "*.jetty.*"
                     )
                     .disableModuleScanning();
-            if (OSUtils.JAVA_SPEC < 16) {
+            if (isUsingClassloader()) {
                 // If we are below Java 16, we can just use the Thread's classloader
                 // See: https://github.com/classgraph/classgraph/wiki#running-on-jdk-16
                 graphInfo.overrideClassLoaders(CLASS_LOADER);
