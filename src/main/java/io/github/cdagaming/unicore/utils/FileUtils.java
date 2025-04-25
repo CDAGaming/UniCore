@@ -33,6 +33,7 @@ import io.github.cdagaming.unicore.impl.Pair;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
+import net.lenni0451.reflect.Classes;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -85,11 +86,6 @@ public class FileUtils {
      * Whether functions utilizing ClassGraph are enabled
      */
     private static boolean CLASS_GRAPH_ENABLED = true;
-    /**
-     * Whether to use the local classloader in certain operations<p>
-     * Note: This can both break and fix several functionalities in this class
-     */
-    private static boolean USE_CLASS_LOADER = OSUtils.JAVA_SPEC < 16.0F;
 
     /**
      * Shutdown the specified Thread Factories
@@ -739,10 +735,13 @@ public class FileUtils {
                     if (!CLASS_CACHE.containsKey(path) || forceCache) {
                         Class<?> result = null;
                         try {
-                            result = Class.forName(path, init, loader);
+                            result = Class.forName(path, init, loader != null ? loader : Classes.getCallerClass(1).getClassLoader());
                         } catch (Throwable ignored) {
                         }
-                        CLASS_CACHE.put(path, result);
+                        if (result != null) {
+                            CLASS_CACHE.put(path, result);
+                        }
+                        return result;
                     }
                     final Class<?> result = CLASS_CACHE.get(path);
                     if (result != null) {
@@ -791,33 +790,11 @@ public class FileUtils {
     /**
      * Return a valid class object, or null if not found
      *
-     * @param useClassLoader Whether to use the thread's current class loader
-     * @param paths          The class path(s) to interpret
-     * @return the valid {@link Class} or null
-     */
-    public static Class<?> findClass(final boolean useClassLoader, final String... paths) {
-        return findClass(useClassLoader ? CLASS_LOADER : null, paths);
-    }
-
-    /**
-     * Return a valid class object, or null if not found
-     *
-     * @param useClassLoader Whether to use the thread's current class loader
-     * @param paths          The class path(s) to interpret
-     * @return the valid {@link Class} or null
-     */
-    public static Class<?> loadClass(final boolean useClassLoader, final String... paths) {
-        return loadClass(useClassLoader ? CLASS_LOADER : null, paths);
-    }
-
-    /**
-     * Return a valid class object, or null if not found
-     *
      * @param paths The class path(s) to interpret
      * @return the valid {@link Class} or null
      */
     public static Class<?> findClass(final String... paths) {
-        return findClass(isUsingClassloader(), paths);
+        return findClass(null, paths);
     }
 
     /**
@@ -827,7 +804,7 @@ public class FileUtils {
      * @return the valid {@link Class} or null
      */
     public static Class<?> loadClass(final String... paths) {
-        return loadClass(isUsingClassloader(), paths);
+        return loadClass(null, paths);
     }
 
     /**
@@ -846,24 +823,6 @@ public class FileUtils {
      */
     public static boolean hasScannedClasses() {
         return ARE_CLASSES_SCANNED;
-    }
-
-    /**
-     * Return whether the local class loader is being used
-     *
-     * @return {@link Boolean#TRUE} if condition is satisfied
-     */
-    public static boolean isUsingClassloader() {
-        return USE_CLASS_LOADER;
-    }
-
-    /**
-     * Sets whether the local class loader is being used
-     *
-     * @param useClassloader if the local class loader is being used
-     */
-    public static void setUsingClassloader(final boolean useClassloader) {
-        USE_CLASS_LOADER = useClassloader;
     }
 
     /**
@@ -910,11 +869,7 @@ public class FileUtils {
                             "*.mixin.*", "*.mixins.*", "*.jetty.*"
                     )
                     .disableModuleScanning();
-            if (isUsingClassloader()) {
-                // If we are below Java 16, we can just use the Thread's classloader
-                // See: https://github.com/classgraph/classgraph/wiki#running-on-jdk-16
-                graphInfo.overrideClassLoaders(CLASS_LOADER);
-            }
+            graphInfo.addClassLoader(CLASS_LOADER);
 
             try (ScanResult scanResult = graphInfo.scan()) {
                 for (ClassInfo result : scanResult.getAllClasses()) {
