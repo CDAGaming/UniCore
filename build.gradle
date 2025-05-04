@@ -79,14 +79,18 @@ test {
     maxParallelForks = Runtime.runtime.availableProcessors()
 }
 
+def projectName = project.name
+def projectVersion = project.version
+def projectDesc = project.description
+
 [jar].each {
     it.manifest {
         attributes([
-                "Specification-Title"     : project.name,
+                "Specification-Title"     : projectName,
                 "Specification-Vendor"    : "CDAGaming",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
-                "Implementation-Title"    : project.name,
-                "Implementation-Version"  : project.version,
+                "Implementation-Title"    : projectName,
+                "Implementation-Version"  : projectVersion,
                 "Implementation-Vendor"   : "CDAGaming",
                 "Implementation-Timestamp": LocalDateTime.now().atOffset(ZoneOffset.UTC)
                         .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ"))
@@ -115,8 +119,8 @@ gradle.projectsEvaluated {
     it.doLast {
         ProcessClasses.process(
                 path, [
-                "APP_NAME"  : project.name,
-                "VERSION_ID": project.version.toString()
+                "APP_NAME"  : projectName,
+                "VERSION_ID": projectVersion.toString()
         ]
         )
     }
@@ -131,7 +135,7 @@ publishing {
                 name = "${archives_base_name}"
                 artifactId = "${archives_base_name}"
                 packaging = 'jar'
-                description = project.description
+                description = projectDesc
                 url = 'https://github.com/CDAGaming/UniCore'
 
                 scm {
