@@ -40,7 +40,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Publish
-        run: ./gradlew publishAllPublicationsToCentralPortal -Pmvn.user=${{ secrets.MAVEN_USER }} -Pmvn.key=${{ secrets.MAVEN_KEY }}
+        run: ./gradlew publishAggregationToCentralPortal -Pmvn.user=${{ secrets.MAVEN_USER }} -Pmvn.key=${{ secrets.MAVEN_KEY }}
 
       - uses: actions/upload-artifact@v4
         with:
