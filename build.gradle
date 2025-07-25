@@ -8,6 +8,7 @@ plugins {
     id 'java'
     id 'signing'
     id 'maven-publish'
+    id 'com.gradleup.nmcp' version '1.0.2'
     id 'com.gradleup.nmcp.aggregation' version '1.0.2'
     id 'com.diffplug.spotless' version '7.2.1'
 }
@@ -69,6 +70,8 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter:5.13.4"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
     testRuntimeOnly "org.slf4j:slf4j-simple:${slf4j_version}"
+
+    nmcpAggregation(project(path))
 }
 
 test {
