@@ -1583,7 +1583,7 @@ public class StringUtils {
     public static Optional<FieldWrapper> getValidField(final Class<?> classToAccess, final String... fieldNames) {
         if (classToAccess == null || fieldNames == null || fieldNames.length == 0) return Optional.empty();
         return getFields(classToAccess).copy()
-                .filter(fieldNames)
+                .filterNames(fieldNames)
                 .jstream()
                 .findFirst();
     }
@@ -1599,7 +1599,7 @@ public class StringUtils {
     public static Optional<MethodWrapper> getValidMethod(final Class<?> classToAccess, final Class<?>[] parameterTypes, final String... methodNames) {
         if (classToAccess == null || methodNames == null || methodNames.length == 0) return Optional.empty();
         return getMethods(classToAccess).copy()
-                .filter(methodNames).filter(parameterTypes)
+                .filterNames(methodNames).filterParameters(parameterTypes)
                 .jstream()
                 .findFirst();
     }

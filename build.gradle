@@ -8,9 +8,9 @@ plugins {
     id 'java'
     id 'signing'
     id 'maven-publish'
-    id 'com.gradleup.nmcp' version '1.0.2'
-    id 'com.gradleup.nmcp.aggregation' version '1.0.2'
-    id 'com.diffplug.spotless' version '7.2.1'
+    id 'com.gradleup.nmcp' version '1.4.2'
+    id 'com.gradleup.nmcp.aggregation' version '1.4.2'
+    id 'com.diffplug.spotless' version '8.1.0'
 }
 
 version = "${build_version}" + (project.hasProperty("version_snapshot") ? "-SNAPSHOT" : "")
@@ -60,14 +60,14 @@ repositories {
 dependencies {
     // Annotations
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
-    compileOnly("com.github.spotbugs:spotbugs-annotations:4.8.6")
+    compileOnly("com.github.spotbugs:spotbugs-annotations:4.9.8")
 
-    implementation group: 'com.google.code.gson', name: 'gson', version: '2.13.1'
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: "${slf4j_version}"
-    implementation group: 'net.lenni0451', name: 'Reflect', version: "${reflect_version}"
-    implementation group: 'io.github.classgraph', name: 'classgraph', version: "${classgraph_version}"
+    implementation "com.google.code.gson:gson:2.13.2"
+    implementation "org.slf4j:slf4j-api:${slf4j_version}"
+    implementation "net.lenni0451:Reflect:${reflect_version}"
+    implementation "io.github.classgraph:classgraph:${classgraph_version}"
 
-    testImplementation "org.junit.jupiter:junit-jupiter:5.13.4"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.14.1"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
     testRuntimeOnly "org.slf4j:slf4j-simple:${slf4j_version}"
 
